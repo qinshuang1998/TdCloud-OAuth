@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" class="no-js">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>通达云认证中心</title>
+    <!-- Set render engine for 360 browser -->
+    <meta name="renderer" content="webkit">
+    <!-- No Baidu Siteapp-->
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="stylesheet" th:href="@{/css/amazeui.min.css}">
+    <style>
+        .header {
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 200%;
+            color: #333;
+            margin-top: 30px;
+        }
+
+        .header p {
+            font-size: 14px;
+        }
+
+        #app {
+            text-align: center;
+        }
+
+        #app h3 {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <div class="am-g">
+        <h1>通达云认证中心</h1>
+        <p>TdSast Certification Center<br/>应用授权，项目注册，信息管理，开发者中心</p>
+    </div>
+    <hr/>
+</div>
+
+<div class="am-g">
+    <div class="am-u-sm-12 am-u-md-4 am-u-sm-centered">
+        <div id="app">
+            <img th:src="${client.getAppLogo()}" alt="应用图片" width="150" height="150" class="am-img-thumbnail"/>
+            <h3 class="am-link-muted" th:text="${client.getAppName()}"></h3>
+            <p class="am-text-danger">该应用将获得以下权限：</p>
+        </div>
+        <div id="authority">
+            <ul class="am-list am-list-static am-list-border">
+                <li>
+                    <span class="am-badge am-badge-success">YES</span>
+                    获取你的个人信息
+                </li>
+                <li>
+                    <span class="am-badge am-badge-success">YES</span>
+                    获取你的学籍信息
+                </li>
+                <li>
+                    <span class="am-badge am-badge-danger">NO</span>
+                    获取你的帐号密码
+                </li>
+            </ul>
+            <div class="am-cf">
+                <button id="auth" class="am-btn am-btn-success am-fl" th:data-url="${callback}">同意授权</button>
+                <button class="am-btn am-btn-danger am-fr"
+                        onclick="window.open('/','_self');">放弃授权
+                </button>
+            </div>
+        </div>
+        <br>
+    </div>
+</div>
+
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="https://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+<!--<![endif]-->
+<!--[if lte IE 8 ]>
+<script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
+<script th:src="@{/js/amazeui.ie8polyfill.min.js}"></script>
+<![endif]-->
+<script th:src="@{/js/amazeui.min.js}"></script>
+<script th:src="@{/js/auth.js}"></script>
+</body>
+</html>
