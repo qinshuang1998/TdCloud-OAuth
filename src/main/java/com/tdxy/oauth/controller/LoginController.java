@@ -4,6 +4,7 @@ import com.tdxy.oauth.component.ResponseHelper;
 import com.tdxy.oauth.model.entity.User;
 import com.tdxy.oauth.model.entity.ZfCookie;
 import com.tdxy.oauth.service.ZfService;
+import org.apache.commons.codec.digest.Md5Crypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Calendar;
 
 /**
  * 用户登录控制器
@@ -47,10 +49,15 @@ public class LoginController {
      * @return login.html视图
      */
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public ModelAndView login(@RequestParam(name = "from") String referer) {
+    public ModelAndView login(@RequestParam(name = "from") String referer,
+                              HttpServletRequest request) {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("login");
-        modelAndView.addObject("referer", referer);
+        if (request.getSession().getAttribute("userId") != null) {
+            modelAndView.setViewName("redirect:" + referer);
+        } else {
+            modelAndView.setViewName("login");
+            modelAndView.addObject("referer", referer);
+        }
         return modelAndView;
     }
 
@@ -73,18 +80,17 @@ public class LoginController {
         try {
             switch (role) {
                 case "student":
-                    ZfCookie cookie = this.zfService.getCookie(username);
+                    String hash = Md5Crypt.apr1Crypt(username + Md5Crypt.apr1Crypt(password));
+                    ZfCookie cookie = this.zfService.getCookieByHash(hash);
                     int cookieStatus = this.zfService.checkCookie(cookie);
                     boolean isSuccess = (cookieStatus == 1) || this.zfService.doLogin(username, password);
                     if (isSuccess) {
                         // 用来标识用户，包含用户角色和用户身份
                         User user = new User("student", username);
                         request.getSession().setAttribute("userId", user);
-                        result = result.sendSuccess();
-                    } else {
-                        result = result.sendError("正方认证失败");
+                        return result.sendSuccess();
                     }
-                    return result;
+                    return result.sendError("正方认证失败");
                 case "teacher":
                     break;
                 default:

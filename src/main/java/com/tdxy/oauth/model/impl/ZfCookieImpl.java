@@ -21,4 +21,8 @@ public class ZfCookieImpl {
     public ZfCookie findByStuNumber(String stuNumber) {
         return this.zfCookieMapper.selectByStuNumber(stuNumber);
     }
+
+    public ZfCookie findByHash(String cookieHash) {
+        return this.zfCookieMapper.selectByHash(cookieHash);
+    }
 }

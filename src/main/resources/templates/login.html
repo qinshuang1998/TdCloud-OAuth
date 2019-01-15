@@ -32,7 +32,7 @@
 <div class="header">
     <div class="am-g">
         <h1>通达云认证中心</h1>
-        <p>TdSast Certification Center<br/>应用授权，项目注册，信息管理，开发者中心</p>
+        <p>TdCloud Certification Center<br/>应用授权，项目注册，信息管理，开发者中心</p>
     </div>
     <hr/>
 </div>
@@ -68,7 +68,10 @@
             </div>
         </form>
         <hr>
-        <p>© 2018 AllMobilize, Inc. Licensed under MIT license.</p>
+        <p>© <span th:text="${#calendars.format(#calendars.createToday().getTime(),'yyyy')}"></span>
+            <a href="http://www.tdsast.cn" target="_blank">科学与技术协会.</a>
+            Licensed under
+            <a href="http://opensource.org/licenses/MIT" target="_blank">MIT license</a>. by the 科协网络部.</p>
     </div>
 </div>
 

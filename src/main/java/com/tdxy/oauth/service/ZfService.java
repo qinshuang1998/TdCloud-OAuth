@@ -7,6 +7,7 @@ import com.tdxy.oauth.model.entity.Student;
 import com.tdxy.oauth.model.entity.ZfCookie;
 import com.tdxy.oauth.model.impl.StudentImpl;
 import com.tdxy.oauth.model.impl.ZfCookieImpl;
+import org.apache.commons.codec.digest.Md5Crypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -79,7 +80,7 @@ public class ZfService {
      * @throws Exception 异常
      */
     public boolean doLogin(String stuNumber, String stuPwd) throws Exception {
-        int cookieStatus = checkCookie(getCookie(stuNumber));
+        int cookieStatus = checkCookie(getCookieByStuNmuber(stuNumber));
         HttpUtil httpUtil = new HttpUtil();
         int statusCode;
         String code;
@@ -91,7 +92,8 @@ public class ZfService {
             loginForm = getForm(stuNumber, stuPwd, code);
             statusCode = (int) httpUtil.doPost(this.url, loginForm, null).get("statusCode");
             if (statusCode == 302) {
-                ZfCookie zfCookie = new ZfCookie(stuNumber,
+                String hash = Md5Crypt.apr1Crypt(stuNumber + Md5Crypt.apr1Crypt(stuPwd));
+                ZfCookie zfCookie = new ZfCookie(stuNumber, hash,
                         httpUtil.getCookie().getName(), httpUtil.getCookie().getValue());
                 storeCookie(zfCookie, cookieStatus);
                 ZfUtil zfUtil = new ZfUtil(zfCookie);
@@ -129,16 +131,22 @@ public class ZfService {
         }
     }
 
-    public ZfCookie getCookie(String stuNumber) {
+    public ZfCookie getCookieByStuNmuber(String stuNumber) {
         return this.zfCookieImpl.findByStuNumber(stuNumber);
+    }
+
+    public ZfCookie getCookieByHash(String cookieHash) {
+        return this.zfCookieImpl.findByHash(cookieHash);
     }
 
     public ZfCookie refreshCookie(String stuNumber) throws Exception {
         Student student = this.studentImpl.getStudent(stuNumber);
         if (student != null) {
             doLogin(student.getStuNumber(), student.getStuPwd());
+        } else {
+            throw new Exception("未找到相应的学生信息");
         }
-        return getCookie(stuNumber);
+        return getCookieByStuNmuber(stuNumber);
     }
 
     /**

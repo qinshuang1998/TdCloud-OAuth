@@ -257,8 +257,10 @@
 </div>
 
 <footer class="footer">
-    <p>© 2019 <a href="www.tdsast.cn" target="_blank">科学与技术协会.</a> Licensed under <a
-            href="http://opensource.org/licenses/MIT" target="_blank">MIT license</a>. by the 科协网络部.</p>
+    <p>© <span th:text="${#calendars.format(#calendars.createToday().getTime(),'yyyy')}"></span>
+        <a href="http://www.tdsast.cn" target="_blank">科学与技术协会.</a>
+        Licensed under
+        <a href="http://opensource.org/licenses/MIT" target="_blank">MIT license</a>. by the 科协网络部.</p>
 </footer>
 
 <!--[if (gte IE 9)|!(IE)]><!-->
@@ -271,9 +273,11 @@
 <![endif]-->
 <script th:src="@{/js/amazeui.min.js}"></script>
 <script>
-    $('#doc-scroll-to-btm').on('click', function () {
-        var $w = $(window);
-        $w.smoothScroll({position: $(document).height() - $w.height()});
+    $(document).ready(function () {
+        $('#doc-scroll-to-btm').on('click', function () {
+            var $w = $(window);
+            $w.smoothScroll({position: $(document).height() - $w.height()});
+        });
     });
 </script>
 </body>

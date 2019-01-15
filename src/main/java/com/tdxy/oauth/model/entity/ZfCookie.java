@@ -5,6 +5,8 @@ import java.util.Date;
 public class ZfCookie {
     private String stuNumber;
 
+    private String cookieHash;
+
     private String cookiePrefix;
 
     private String cookieValue;
@@ -14,10 +16,19 @@ public class ZfCookie {
     public ZfCookie() {
     }
 
-    public ZfCookie(String stuNumber, String cookiePrefix, String cookieValue) {
+    public ZfCookie(String stuNumber, String cookieHash, String cookiePrefix, String cookieValue) {
         this.stuNumber = stuNumber;
+        this.cookieHash = cookieHash;
         this.cookiePrefix = cookiePrefix;
         this.cookieValue = cookieValue;
+    }
+
+    public String getCookieHash() {
+        return cookieHash;
+    }
+
+    public void setCookieHash(String cookieHash) {
+        this.cookieHash = cookieHash;
     }
 
     public String getStuNumber() {
