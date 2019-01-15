@@ -32,7 +32,7 @@
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
 
-        <!-- mapper mapper 映射配置文件 -->
+        <!--  mapper mapper 映射配置文件 -->
         <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources">
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
@@ -43,7 +43,7 @@
         </javaClientGenerator>
 
         <!-- 数据表进行生成操作 schema:相当于库名; tableName:表名; domainObjectName:对应的DO -->
-        <table schema="oauth" tableName="oauth_zf_cookie" domainObjectName="Cookie"
+        <table schema="oauth" tableName="oauth_user_teacher" domainObjectName="Teacher"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false"
                selectByExampleQueryId="false">

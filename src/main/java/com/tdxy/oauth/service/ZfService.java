@@ -92,7 +92,7 @@ public class ZfService {
             loginForm = getForm(stuNumber, stuPwd, code);
             statusCode = (int) httpUtil.doPost(this.url, loginForm, null).get("statusCode");
             if (statusCode == 302) {
-                String hash = Md5Crypt.apr1Crypt(stuNumber + Md5Crypt.apr1Crypt(stuPwd));
+                String hash = Md5Crypt.apr1Crypt(stuNumber + Md5Crypt.apr1Crypt(stuPwd, "pwd"), "cache");
                 ZfCookie zfCookie = new ZfCookie(stuNumber, hash,
                         httpUtil.getCookie().getName(), httpUtil.getCookie().getValue());
                 storeCookie(zfCookie, cookieStatus);

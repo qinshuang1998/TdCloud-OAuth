@@ -55,7 +55,7 @@ public class AuthController {
         ModelAndView modelAndView = new ModelAndView();
         try {
             // 取得session中的User对象
-            User user = (User) request.getSession().getAttribute("userId");
+            User user = (User) request.getSession().getAttribute("OAuth_User");
             // 获取Client实体
             Client client = this.clientService.getClient(appId);
             // 下发一个临时的授权码code
@@ -66,6 +66,7 @@ public class AuthController {
             modelAndView.addObject("client", client);
             modelAndView.addObject("callback", callback);
         } catch (Exception ex) {
+            ex.printStackTrace();
             modelAndView.setViewName("error");
         }
         return modelAndView;

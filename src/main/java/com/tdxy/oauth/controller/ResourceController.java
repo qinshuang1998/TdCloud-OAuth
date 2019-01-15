@@ -3,11 +3,9 @@ package com.tdxy.oauth.controller;
 import com.tdxy.oauth.component.ResponseHelper;
 import com.tdxy.oauth.component.ZfUtil;
 import com.tdxy.oauth.exception.InvalidTokenException;
-import com.tdxy.oauth.model.entity.ScoreTable;
-import com.tdxy.oauth.model.entity.Student;
-import com.tdxy.oauth.model.entity.User;
-import com.tdxy.oauth.model.entity.ZfCookie;
+import com.tdxy.oauth.model.entity.*;
 import com.tdxy.oauth.service.StudentService;
+import com.tdxy.oauth.service.TeacherService;
 import com.tdxy.oauth.service.TokenService;
 import com.tdxy.oauth.service.ZfService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +28,8 @@ public class ResourceController {
      */
     private StudentService studentService;
 
+    private TeacherService teacherService;
+
     private ZfService zfService;
 
     /**
@@ -38,8 +38,9 @@ public class ResourceController {
     private TokenService tokenService;
 
     @Autowired
-    public ResourceController(StudentService studentService, ZfService zfService, TokenService tokenService) {
+    public ResourceController(StudentService studentService, TeacherService teacherService, ZfService zfService, TokenService tokenService) {
         this.studentService = studentService;
+        this.teacherService = teacherService;
         this.zfService = zfService;
         this.tokenService = tokenService;
     }
@@ -61,17 +62,19 @@ public class ResourceController {
             switch (user.getRole()) {
                 case "student":
                     Student student = this.studentService.getInfo(user.getIdentity());
-                    result = result.sendSuccess(student, "student");
+                    result.sendSuccess(student, "student");
                     break;
                 case "teacher":
+                    Teacher teacher = this.teacherService.getTeacher(user.getIdentity());
+                    result.sendSuccess(teacher, "teacher");
                     break;
                 default:
                     break;
             }
-            return result;
         } catch (InvalidTokenException ex) {
-            return result.sendError(ex.getMessage());
+            result.sendError(ex.getMessage());
         }
+        return result;
     }
 
     @RequestMapping(value = "/getAllScore", method = RequestMethod.GET)

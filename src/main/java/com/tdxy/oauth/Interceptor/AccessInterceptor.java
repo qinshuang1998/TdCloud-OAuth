@@ -15,7 +15,7 @@ public class AccessInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if (request.getSession().getAttribute("userId") == null) {
+        if (request.getSession().getAttribute("OAuth_User") == null) {
             String callBack = URLEncoder.encode(request.getRequestURL() + "?" + request.getQueryString(), "utf-8");
             response.setStatus(302);
             response.sendRedirect("/login?from=" + callBack);

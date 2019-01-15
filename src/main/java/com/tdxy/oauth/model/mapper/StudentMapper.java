@@ -10,13 +10,13 @@ public interface StudentMapper {
             "#{stuNation}, #{stuMajor}, #{stuIdCard}, #{stuPhone}, #{stuEmail})")
     int insertOne(Student student);
 
-    @Select("SELECT COUNT(*) FROM oauth_user_student WHERE stu_number = #{stuNumber}")
+    @Select("SELECT COUNT(*) FROM oauth_user_student WHERE stu_number = #{arg0}")
     int findLineByStuNumber(String stuNumber);
 
-    @Select("SELECT stu_name FROM oauth_user_student WHERE stu_number = #{stuNumber}")
+    @Select("SELECT stu_name FROM oauth_user_student WHERE stu_number = #{arg0}")
     String findNameByStuNumber(String stuNumber);
 
-    @Select("SELECT * FROM oauth_user_student WHERE stu_number = #{stuNumber}")
+    @Select("SELECT * FROM oauth_user_student WHERE stu_number = #{arg0}")
     Student findAllByStuNumber(String stuNumber);
 
     @Update("UPDATE oauth_user_student SET stu_number = #{stuNumber}, stu_pwd = #{stuPwd}," +

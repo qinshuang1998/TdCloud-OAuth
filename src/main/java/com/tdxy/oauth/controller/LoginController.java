@@ -3,6 +3,7 @@ package com.tdxy.oauth.controller;
 import com.tdxy.oauth.component.ResponseHelper;
 import com.tdxy.oauth.model.entity.User;
 import com.tdxy.oauth.model.entity.ZfCookie;
+import com.tdxy.oauth.service.TeacherService;
 import com.tdxy.oauth.service.ZfService;
 import org.apache.commons.codec.digest.Md5Crypt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +38,12 @@ public class LoginController {
      */
     private ZfService zfService;
 
+    private TeacherService teacherService;
+
     @Autowired
-    public LoginController(ZfService zfService) {
+    public LoginController(ZfService zfService, TeacherService teacherService) {
         this.zfService = zfService;
+        this.teacherService = teacherService;
     }
 
     /**
@@ -52,7 +56,7 @@ public class LoginController {
     public ModelAndView login(@RequestParam(name = "from") String referer,
                               HttpServletRequest request) {
         ModelAndView modelAndView = new ModelAndView();
-        if (request.getSession().getAttribute("userId") != null) {
+        if (request.getSession().getAttribute("OAuth_User") != null) {
             modelAndView.setViewName("redirect:" + referer);
         } else {
             modelAndView.setViewName("login");
@@ -78,27 +82,31 @@ public class LoginController {
                                   HttpServletRequest request) {
         ResponseHelper<Object> result = new ResponseHelper<>();
         try {
+            boolean isSuccess = false;
+            // 用来标识用户，包含用户角色和用户身份
+            User user = null;
             switch (role) {
                 case "student":
-                    String hash = Md5Crypt.apr1Crypt(username + Md5Crypt.apr1Crypt(password));
+                    user = new User("student", username);
+                    String hash = Md5Crypt.apr1Crypt(username + Md5Crypt.apr1Crypt(password, "pwd"), "cache");
                     ZfCookie cookie = this.zfService.getCookieByHash(hash);
                     int cookieStatus = this.zfService.checkCookie(cookie);
-                    boolean isSuccess = (cookieStatus == 1) || this.zfService.doLogin(username, password);
-                    if (isSuccess) {
-                        // 用来标识用户，包含用户角色和用户身份
-                        User user = new User("student", username);
-                        request.getSession().setAttribute("userId", user);
-                        return result.sendSuccess();
-                    }
-                    return result.sendError("正方认证失败");
+                    isSuccess = (cookieStatus == 1) || this.zfService.doLogin(username, password);
+                    break;
                 case "teacher":
+                    user = new User("teacher", username);
+                    isSuccess = this.teacherService.doLogin(username, password);
                     break;
                 default:
                     break;
             }
+            if (isSuccess) {
+                request.getSession().setAttribute("OAuth_User", user);
+                return result.sendSuccess();
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return result.sendError("未知错误");
+        return result.sendError("当前登录失败");
     }
 }
