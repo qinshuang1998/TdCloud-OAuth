@@ -16,6 +16,6 @@ public interface ZfCookieMapper {
     @Select("SELECT * FROM oauth_zf_cookie WHERE cookie_hash = #{arg0}")
     ZfCookie selectByHash(String cookieHash);
 
-    @Update("UPDATE oauth_zf_cookie SET stu_number = #{stuNumber}, cookie_value = #{cookieValue}")
+    @Update("UPDATE oauth_zf_cookie SET cookie_value = #{cookieValue} WHERE stu_number = #{stuNumber}")
     int updateOne(ZfCookie cookie);
 }
