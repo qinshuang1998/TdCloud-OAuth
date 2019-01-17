@@ -94,7 +94,8 @@ public class LoginController {
                     isSuccess = (cookieStatus == 1) || this.zfService.doLogin(username, password);
                     break;
                 case "teacher":
-                    user = new User("teacher", username);
+                    String tchName = this.teacherService.getTeacherByName(username).getTchWorknum();
+                    user = new User("teacher", tchName);
                     isSuccess = this.teacherService.doLogin(username, password);
                     break;
                 default:

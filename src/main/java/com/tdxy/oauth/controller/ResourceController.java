@@ -65,7 +65,7 @@ public class ResourceController {
                     result.sendSuccess(student, "student");
                     break;
                 case "teacher":
-                    Teacher teacher = this.teacherService.getTeacher(user.getIdentity());
+                    Teacher teacher = this.teacherService.getTeacherByWorknum(user.getIdentity());
                     result.sendSuccess(teacher, "teacher");
                     break;
                 default:
