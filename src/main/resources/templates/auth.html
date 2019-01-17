@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="">
-    <meta name="keywords" content="">
+    <meta name="description" content="应用授权，项目注册，信息管理，开发者中心">
+    <meta name="keywords" content="通达云认证中心">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>通达云认证中心</title>
     <!-- Set render engine for 360 browser -->
@@ -74,7 +74,11 @@
                 </button>
             </div>
         </div>
-        <br>
+        <hr>
+        <p>© <span th:text="${#calendars.format(#calendars.createToday().getTime(),'yyyy')}"></span>
+            <a href="http://www.tdsast.cn" target="_blank">科学与技术协会.</a>
+            Licensed under
+            <a href="http://opensource.org/licenses/MIT" target="_blank">MIT license</a>. by the 科协网络部.</p>
     </div>
 </div>
 

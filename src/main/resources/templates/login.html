@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="">
-    <meta name="keywords" content="">
+    <meta name="description" content="应用授权，项目注册，信息管理，开发者中心">
+    <meta name="keywords" content="通达云认证中心">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>通达云认证中心</title>
     <!-- Set render engine for 360 browser -->
@@ -50,17 +50,20 @@
                        required>
             </div>
             <br>
-            <label for="role">角色</label>
-            <select id="role" name="role">
-                <option value="student">学生</option>
-                <option value="teacher">教师</option>
-            </select>
-            <br>
-            <label for="remember-me">
-                <input id="remember-me" type="checkbox">
-                记住密码
-            </label>
-            <br/>
+            <div class="am-form-group">
+                <label for="role">角色</label>
+                <select id="role" name="role">
+                    <option value="student">学生</option>
+                    <option value="teacher">教师</option>
+                </select>
+            </div>
+            <div class="am-checkbox">
+                <label for="readme">
+                    <input id="readme" type="checkbox" checked>
+                </label>
+                我已阅读并同意
+                <a style="cursor:pointer;" data-am-modal="{target: '#modal'}">《通达云服务条款》</a>
+            </div>
             <div class="am-cf">
                 <input id="submit" type="submit" value="登 录" class="am-btn am-btn-primary am-btn-sm am-fl"
                        th:data-referer="${referer}">
@@ -72,6 +75,33 @@
             <a href="http://www.tdsast.cn" target="_blank">科学与技术协会.</a>
             Licensed under
             <a href="http://opensource.org/licenses/MIT" target="_blank">MIT license</a>. by the 科协网络部.</p>
+    </div>
+</div>
+
+<div class="am-popup" id="modal">
+    <div class="am-popup-inner">
+        <div class="am-popup-hd">
+            <h4 class="am-popup-title">《通达云服务条款》</h4>
+            <span data-am-modal-close
+                  class="am-close">&times;</span>
+        </div>
+        <div class="am-popup-bd am-text-left">
+            <p>通达云认证中心（下称“本平台”）在此特别提醒用户认真阅读、充分理解本《通达云服务条款》（下称“《协议》”）中各条款。
+                您的注册或使用行为将视为对本《协议》的接受，并同意接受本《协议》各项条款的约束。</p>
+            <p>本平台有权随时根据具体情况修改本协议。如果用户不同意协议改动内容，请立即停止使用本服务。如果用户继续使用本服务，则视为接受本协议的改动。</p>
+            <strong>用户信息采集规则</strong>
+            <hr data-am-widget="divider" class="am-divider am-divider-default"/>
+            1）为了向您提供更好的服务，我们会在为您提供服务的过程中收集必要的数据信息，并通过分析这些数据，为您提供更优质的服务。<br>
+            2）我们高度重视用户信息保护，并会对收集到的数据采取加密处理，保证信息的安全性。<br>
+            3）用户同意，在以下（包括但不限于）几种情况下，本平台有权使用用户的信息资源：<br>
+            <ul>
+                <li>校园第三方应用的信息获取</li>
+                <li>教务系统用户名和密码的记录</li>
+                <li>为用户发送订阅的通知</li>
+                <li>在不透露用户隐私资料的前提下，本平台可能对用户数据库进行分析并生成统计数据</li>
+                <li>其他有利于用户利益和实现本平台功能的使用行为</li>
+            </ul>
+        </div>
     </div>
 </div>
 

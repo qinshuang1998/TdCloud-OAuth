@@ -1,4 +1,11 @@
 $(document).ready(function () {
+    $("#readme").change(function () {
+        if ($(this).is(":checked")) {
+            $("#submit").removeAttr("disabled", "disabled");
+        } else {
+            $("#submit").attr("disabled", "disabled");
+        }
+    });
     $('form').validator({
         onValid: function (validity) {
             $(validity.field).closest('.alert').find('.am-alert').hide();
