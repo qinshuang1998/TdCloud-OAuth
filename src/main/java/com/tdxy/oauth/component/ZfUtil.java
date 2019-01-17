@@ -56,8 +56,8 @@ public class ZfUtil {
         student.setStuNation(doc.select("#lbl_mz").text());
         student.setStuMajor(doc.select("#lbl_zymc").text());
         student.setStuIdCard(doc.select("#lbl_sfzh").text());
-        student.setStuPhone(doc.select("#TELNUMBER").text());
-        student.setStuEmail(doc.select("#dzyxdz").text());
+        student.setStuPhone(doc.select("#TELNUMBER").val());
+        student.setStuEmail(doc.select("#dzyxdz").val());
         return student;
     }
 
