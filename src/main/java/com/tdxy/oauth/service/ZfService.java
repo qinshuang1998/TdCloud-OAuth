@@ -178,13 +178,12 @@ public class ZfService {
      * @param student 学生
      */
     private void storeStudent(Student student) {
+        String stuName = student.getStuNumber();
         // 首先判断数据库里有没有当前学号，没有的话直接INSERT
-        if (this.studentImpl.hasStudent(student.getStuNumber()) == 0) {
+        if (this.studentImpl.hasStudent(stuName) == 0) {
             this.studentImpl.addStudent(student);
-            // 如果有学号记录，就再比对下姓名是否一致，不一致估计是换届了，更新下数据
-            // 姓名再一样的话几率有点低了，没考虑
-        } else if (!this.studentImpl.getNameByStuNumber(student.getStuNumber())
-                .equals(student.getStuName())) {
+            // 如果有学号记录，就再比对下是否一致，更新下数据
+        } else if (!this.studentImpl.getStudent(stuName).equals(student)) {
             this.studentImpl.updateInfo(student);
         }
     }

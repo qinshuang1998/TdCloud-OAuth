@@ -2,6 +2,8 @@ package com.tdxy.oauth.model.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
+import java.util.Objects;
+
 public class Student {
     @JSONField(ordinal = 1)
     private String stuNumber;
@@ -107,5 +109,30 @@ public class Student {
                 ", stuEmail='" + stuEmail + '\'' +
                 ", stuPwd='" + stuPwd + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Student)) {
+            return false;
+        }
+        Student student = (Student) o;
+        return Objects.equals(stuNumber, student.stuNumber) &&
+                Objects.equals(stuName, student.stuName) &&
+                Objects.equals(stuSex, student.stuSex) &&
+                Objects.equals(stuNation, student.stuNation) &&
+                Objects.equals(stuMajor, student.stuMajor) &&
+                Objects.equals(stuIdCard, student.stuIdCard) &&
+                Objects.equals(stuPhone, student.stuPhone) &&
+                Objects.equals(stuEmail, student.stuEmail) &&
+                Objects.equals(stuPwd, student.stuPwd);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(stuNumber, stuName, stuSex, stuNation, stuMajor, stuIdCard, stuPhone, stuEmail, stuPwd);
     }
 }
