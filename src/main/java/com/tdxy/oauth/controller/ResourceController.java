@@ -2,6 +2,7 @@ package com.tdxy.oauth.controller;
 
 import com.tdxy.oauth.component.ResponseHelper;
 import com.tdxy.oauth.component.ZfUtil;
+import com.tdxy.oauth.context.AuthUserContext;
 import com.tdxy.oauth.exception.InvalidTokenException;
 import com.tdxy.oauth.model.entity.*;
 import com.tdxy.oauth.service.StudentService;
@@ -32,57 +33,49 @@ public class ResourceController {
 
     private ZfService zfService;
 
-    /**
-     * access_token的一些服务
-     */
-    private TokenService tokenService;
+    private AuthUserContext authUserContext;
 
     @Autowired
-    public ResourceController(StudentService studentService, TeacherService teacherService, ZfService zfService, TokenService tokenService) {
+    public ResourceController(StudentService studentService,
+                              TeacherService teacherService, ZfService zfService, AuthUserContext authUserContext) {
         this.studentService = studentService;
         this.teacherService = teacherService;
         this.zfService = zfService;
-        this.tokenService = tokenService;
+        this.authUserContext = authUserContext;
     }
 
     /**
      * 获取已授权用户的个人信息
      *
-     * @param accessToken 合法的access_token
      * @return 用户信息Json字符串
      */
     @RequestMapping(value = "/getInfo", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseHelper getInfo(@RequestParam(name = "access_token") String accessToken) {
+    public ResponseHelper getInfo() {
         ResponseHelper<Object> result = new ResponseHelper<>();
-        try {
-            // 通过token获取用户信息
-            User user = this.tokenService.getUserByToken(accessToken);
-            // token只保留唯一身份标识，具体信息需要入库查询
-            switch (user.getRole()) {
-                case "student":
-                    Student student = this.studentService.getInfo(user.getIdentity());
-                    result.sendSuccess(student, "student");
-                    break;
-                case "teacher":
-                    Teacher teacher = this.teacherService.getTeacherByWorknum(user.getIdentity());
-                    result.sendSuccess(teacher, "teacher");
-                    break;
-                default:
-                    break;
-            }
-        } catch (InvalidTokenException ex) {
-            result.sendError(ex.getMessage());
+        User user = this.authUserContext.getPrincipal();
+        // token只保留唯一身份标识，具体信息需要入库查询
+        switch (user.getRole()) {
+            case "student":
+                Student student = this.studentService.getInfo(user.getIdentity());
+                result.sendSuccess(student, "student");
+                break;
+            case "teacher":
+                Teacher teacher = this.teacherService.getTeacherByWorknum(user.getIdentity());
+                result.sendSuccess(teacher, "teacher");
+                break;
+            default:
+                break;
         }
         return result;
     }
 
     @RequestMapping(value = "/getAllScore", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseHelper getAllScore(@RequestParam(name = "access_token") String accessToken) {
+    public ResponseHelper getAllScore() {
         ResponseHelper<Object> result = new ResponseHelper<>();
         try {
-            User user = this.tokenService.getUserByToken(accessToken);
+            User user = this.authUserContext.getPrincipal();
             String stuNumber = user.getIdentity();
             ZfCookie cookie = this.zfService.refreshCookie(stuNumber);
             ZfUtil zfUtil = new ZfUtil(cookie);
@@ -95,11 +88,10 @@ public class ResourceController {
 
     @RequestMapping(value = "/getScoreByYear", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseHelper getScoreByYear(@RequestParam(name = "access_token") String accessToken,
-                                         @RequestParam(name = "year") String year) {
+    public ResponseHelper getScoreByYear(@RequestParam(name = "year") String year) {
         ResponseHelper<Object> result = new ResponseHelper<>();
         try {
-            User user = this.tokenService.getUserByToken(accessToken);
+            User user = this.authUserContext.getPrincipal();
             String stuNumber = user.getIdentity();
             ZfCookie cookie = this.zfService.refreshCookie(stuNumber);
             ZfUtil zfUtil = new ZfUtil(cookie);
@@ -112,12 +104,11 @@ public class ResourceController {
 
     @RequestMapping(value = "/getScoreByTerm", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseHelper getScoreByTerm(@RequestParam(name = "access_token") String accessToken,
-                                         @RequestParam(name = "year") String year,
+    public ResponseHelper getScoreByTerm(@RequestParam(name = "year") String year,
                                          @RequestParam(name = "term") String term) {
         ResponseHelper<Object> result = new ResponseHelper<>();
         try {
-            User user = this.tokenService.getUserByToken(accessToken);
+            User user = this.authUserContext.getPrincipal();
             String stuNumber = user.getIdentity();
             ZfCookie cookie = this.zfService.refreshCookie(stuNumber);
             ZfUtil zfUtil = new ZfUtil(cookie);

@@ -1,4 +1,4 @@
-package com.tdxy.oauth.Interceptor;
+package com.tdxy.oauth.interceptor;
 
 import org.springframework.web.servlet.HandlerInterceptor;
 

@@ -26,7 +26,7 @@ import java.util.Date;
 public class WebLogAspect {
     private final static Logger logger = LoggerFactory.getLogger(WebLogAspect.class);
 
-    ThreadLocal<Long> startTime = new ThreadLocal<>();
+    private ThreadLocal<Long> startTime = new ThreadLocal<>();
 
     @Pointcut("execution(* com.tdxy.oauth.controller.*.*(..))")
     public void webLog() {
@@ -50,5 +50,6 @@ public class WebLogAspect {
     @AfterReturning("webLog()")
     public void doAfterReturning() {
         logger.info("SPEND TIME : " + (System.currentTimeMillis() - startTime.get()) + " ms");
+        startTime.remove();
     }
 }
