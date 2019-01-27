@@ -2,6 +2,7 @@ package com.tdxy.oauth.service;
 
 import com.tdxy.oauth.component.HttpUtil;
 import com.tdxy.oauth.component.ImageOcr;
+import com.tdxy.oauth.component.Rc4Encrypt;
 import com.tdxy.oauth.component.ZfUtil;
 import com.tdxy.oauth.model.entity.Student;
 import com.tdxy.oauth.model.entity.ZfCookie;
@@ -27,14 +28,14 @@ public class ZfService {
     /**
      * 学生DAO层
      */
-    private StudentImpl studentImpl;
+    private final StudentImpl studentImpl;
 
-    private ZfCookieImpl zfCookieImpl;
+    private final ZfCookieImpl zfCookieImpl;
 
     /**
      * 验证码识别
      */
-    private ImageOcr imageOcr;
+    private final ImageOcr imageOcr;
 
     @Autowired
     public ZfService(StudentImpl studentImpl, ZfCookieImpl zfCookieImpl, ImageOcr imageOcr) {
@@ -98,7 +99,9 @@ public class ZfService {
                 storeCookie(zfCookie, cookieStatus);
                 ZfUtil zfUtil = new ZfUtil(zfCookie);
                 Student student = zfUtil.getInfo(stuNumber);
-                student.setStuPwd(stuPwd);
+                String key = Md5Crypt.apr1Crypt(
+                        student.getStuNumber() + student.getStuName(), "Rc4Encrypt");
+                student.setStuPwd(Rc4Encrypt.encrypt(stuPwd, key));
                 storeStudent(student);
                 // 销毁会话
                 httpUtil.closeUtil();
@@ -142,7 +145,9 @@ public class ZfService {
     public ZfCookie refreshCookie(String stuNumber) throws Exception {
         Student student = this.studentImpl.getStudent(stuNumber);
         if (student != null) {
-            doLogin(student.getStuNumber(), student.getStuPwd());
+            String key = Md5Crypt.apr1Crypt(
+                    student.getStuNumber() + student.getStuName(), "Rc4Encrypt");
+            doLogin(student.getStuNumber(), Rc4Encrypt.decrypt(student.getStuPwd(), key));
         } else {
             throw new Exception("未找到相应的学生信息");
         }

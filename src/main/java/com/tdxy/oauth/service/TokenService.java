@@ -5,9 +5,11 @@ import com.tdxy.oauth.exception.IllegalClientException;
 import com.tdxy.oauth.exception.InvalidCodeException;
 import com.tdxy.oauth.exception.InvalidTokenException;
 import com.tdxy.oauth.model.entity.Client;
+import com.tdxy.oauth.model.entity.RefreshToken;
 import com.tdxy.oauth.model.entity.Token;
 import com.tdxy.oauth.model.entity.User;
 import com.tdxy.oauth.model.impl.ClientImpl;
+import com.tdxy.oauth.model.impl.RefreshTokenImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,17 +25,20 @@ public class TokenService {
     /**
      * 客户端DAO层
      */
-    private ClientImpl clientImpl;
+    private final ClientImpl clientImpl;
 
     /**
      * redis工具类
      */
-    private RedisUtil redisUtil;
+    private final RedisUtil redisUtil;
+
+    private final RefreshTokenImpl refreshTokenImpl;
 
     @Autowired
-    public TokenService(ClientImpl clientImpl, RedisUtil redisUtil) {
+    public TokenService(ClientImpl clientImpl, RedisUtil redisUtil, RefreshTokenImpl refreshTokenImpl) {
         this.clientImpl = clientImpl;
         this.redisUtil = redisUtil;
+        this.refreshTokenImpl = refreshTokenImpl;
     }
 
     /**
@@ -45,25 +50,50 @@ public class TokenService {
      * @return Token实体
      */
     public Token getToken(Client client, User user, long time) {
-        String accessToken = null;
-        String uid = "access_token:" + client.getAppId() + "_" + user.getIdentity();
+        String accessToken, refreshToken;
+        RefreshToken oldRefreshToken = getRefreshToken(client.getAppId(), user.getIdentity());
         // 如果之前生成过了就直接取出来返回
-        if (this.redisUtil.hasKey(uid)) {
-            accessToken = (String) this.redisUtil.get(uid);
+        //if (this.redisUtil.hasKey(uid)) {
+        // 生成随机的access_token
+        accessToken = UUID.randomUUID().toString();
+        //refreshToken = UUID.randomUUID().toString();
+        this.redisUtil.set(accessToken, user, time);
+        if (oldRefreshToken == null) {
+            refreshToken = UUID.randomUUID().toString();
+            RefreshToken newRefreshToken = new RefreshToken(refreshToken,
+                    accessToken, client.getAppId(), user.getIdentity(), user.getRole());
+            this.refreshTokenImpl.addOne(newRefreshToken);
         } else {
-            // 生成随机的access_token
-            accessToken = UUID.randomUUID().toString();
-            // redis作为非关系型数据库，需要自己建立数据间联系
-            this.redisUtil.set(uid, accessToken, time);
-            this.redisUtil.set(accessToken, user, time);
+            refreshToken = oldRefreshToken.getRefreshToken();
+            if (this.redisUtil.hasKey(oldRefreshToken.getTokenId())) {
+                this.redisUtil.del(oldRefreshToken.getTokenId());
+            }
+            this.refreshTokenImpl.updateByTokenId(accessToken);
         }
         // 构造Token实体
-        Token token = new Token();
-        token.setAccessToken(accessToken);
-        token.setExpiresIn(time);
-        token.setTokenType("bearer");
-        token.setScope("read");
-        return token;
+        return new Token(accessToken, "bearer", time, refreshToken, "read");
+    }
+
+    private RefreshToken getRefreshToken(String appId, String userIdentity) {
+        return this.refreshTokenImpl.findByAppIdAndUser(appId, userIdentity);
+    }
+
+    public Token refreshToken(String refreshToken, long time) throws InvalidTokenException {
+        RefreshToken refresh = (refreshToken != null) ?
+                this.refreshTokenImpl.findTokenByRefreshToken(refreshToken) : null;
+        String accessToken = null;
+        if (refresh != null) {
+            if (this.redisUtil.hasKey(refresh.getTokenId())) {
+                this.redisUtil.del(refresh.getTokenId());
+            }
+            User user = new User(refresh.getUserRole(), refresh.getUserIdentity());
+            accessToken = UUID.randomUUID().toString();
+            this.redisUtil.set(accessToken, user, time);
+            this.refreshTokenImpl.updateByTokenId(accessToken);
+        } else {
+            throw new InvalidTokenException("无效的refresh_token");
+        }
+        return new Token(accessToken, "bearer", time, refreshToken, "read");
     }
 
     /**
@@ -75,7 +105,7 @@ public class TokenService {
      * @throws InvalidCodeException code异常
      */
     public User checkCode(String appId, String code) throws InvalidCodeException {
-        if (!this.redisUtil.hasKey(code)) {
+        if (code == null || !this.redisUtil.hasKey(code)) {
             throw new InvalidCodeException("无效的授权码");
         }
         User user = (User) this.redisUtil.get(code);
@@ -105,7 +135,7 @@ public class TokenService {
         if (this.redisUtil.hasKey(accessToken)) {
             return (User) this.redisUtil.get(accessToken);
         } else {
-            throw new InvalidTokenException("无效的token");
+            throw new InvalidTokenException("无效的access_token");
         }
     }
 }

@@ -19,10 +19,9 @@ public class StudentImpl {
     /**
      * 学生个人信息入库
      * @param student 学生实体
-     * @return 操作条数
      */
-    public int addStudent(Student student) {
-        return this.studentMapper.insertOne(student);
+    public void addStudent(Student student) {
+        this.studentMapper.insertOne(student);
     }
 
     /**
@@ -46,10 +45,9 @@ public class StudentImpl {
     /**
      * 更新原有的学生记录
      * @param student 学生实体
-     * @return 更新条数
      */
-    public int updateInfo(Student student) {
-        return this.studentMapper.updateByStuNumber(student);
+    public void updateInfo(Student student) {
+        this.studentMapper.updateByStuNumber(student);
     }
 
     /**

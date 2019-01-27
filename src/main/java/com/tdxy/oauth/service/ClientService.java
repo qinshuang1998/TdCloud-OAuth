@@ -19,12 +19,12 @@ public class ClientService {
     /**
      * 客户端DAO层
      */
-    private ClientImpl clientImpl;
+    private final ClientImpl clientImpl;
 
     /**
      * redis工具
      */
-    private RedisUtil redisUtil;
+    private final RedisUtil redisUtil;
 
     @Autowired
     public ClientService(ClientImpl clientImpl, RedisUtil redisUtil) {

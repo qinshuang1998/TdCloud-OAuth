@@ -36,9 +36,9 @@ public class LoginController {
     /**
      * 正方服务
      */
-    private ZfService zfService;
+    private final ZfService zfService;
 
-    private TeacherService teacherService;
+    private final TeacherService teacherService;
 
     @Autowired
     public LoginController(ZfService zfService, TeacherService teacherService) {

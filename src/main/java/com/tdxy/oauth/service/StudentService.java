@@ -15,7 +15,7 @@ public class StudentService {
     /**
      * 学生DAO层
      */
-    private StudentImpl studentImpl;
+    private final StudentImpl studentImpl;
 
     @Autowired
     public StudentService(StudentImpl studentImpl) {

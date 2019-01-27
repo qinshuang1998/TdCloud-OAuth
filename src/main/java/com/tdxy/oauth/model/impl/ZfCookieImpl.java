@@ -10,12 +10,12 @@ public class ZfCookieImpl {
     @Autowired
     private ZfCookieMapper zfCookieMapper;
 
-    public int addOne(ZfCookie cookie) {
-        return this.zfCookieMapper.insertOne(cookie);
+    public void addOne(ZfCookie cookie) {
+        this.zfCookieMapper.insertOne(cookie);
     }
 
-    public int updateOne(ZfCookie cookie) {
-        return this.zfCookieMapper.updateOne(cookie);
+    public void updateOne(ZfCookie cookie) {
+        this.zfCookieMapper.updateOne(cookie);
     }
 
     public ZfCookie findByStuNumber(String stuNumber) {

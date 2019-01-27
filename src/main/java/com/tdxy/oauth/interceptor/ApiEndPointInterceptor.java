@@ -29,7 +29,7 @@ public class ApiEndPointInterceptor implements HandlerInterceptor {
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(401);
         ResponseHelper result = new ResponseHelper();
-        String error = JSONObject.toJSONString(result.sendError("无效的token"));
+        String error = JSONObject.toJSONString(result.sendError("无效的access_token"));
         try {
             writer = response.getWriter();
             writer.print(error);

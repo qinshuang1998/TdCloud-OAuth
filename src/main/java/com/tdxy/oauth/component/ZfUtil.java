@@ -1,5 +1,6 @@
 package com.tdxy.oauth.component;
 
+import com.tdxy.oauth.model.entity.CourseTable;
 import com.tdxy.oauth.model.entity.ScoreTable;
 import com.tdxy.oauth.model.entity.Student;
 import com.tdxy.oauth.model.entity.ZfCookie;
@@ -10,10 +11,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ZfUtil {
     /**
@@ -61,6 +59,34 @@ public class ZfUtil {
         return student;
     }
 
+    public CourseTable getCourse(String stuNumber) throws Exception {
+        String sUrl = this.url + "/xskbcx.aspx?xh=" + stuNumber;
+        String getContent = new String((byte[]) this.httpUtil
+                .doGet(sUrl, this.header).get("content"), "GBK");
+        String html = new String(getUtf8ByteFromGbkString(getContent),
+                StandardCharsets.UTF_8);
+        Document doc = Jsoup.parse(html);
+        Elements el = doc.select("[selected=selected]");
+        CourseTable courseTable = new CourseTable(el.get(0).text(), el.get(1).text());
+        return buildCourseTable(doc, courseTable);
+    }
+
+    public CourseTable getCourseByYearAndTerm(String stuNumber, String year, String term) throws Exception {
+        String sUrl = this.url + "/xskbcx.aspx?xh=" + stuNumber;
+        String[] csrfAttr = getCsrfAttr(sUrl);
+        Map<String, String> postData = new HashMap<>(5);
+        postData.put("__VIEWSTATE", csrfAttr[0]);
+        postData.put("__VIEWSTATEGENERATOR", csrfAttr[1]);
+        postData.put("__EVENTTARGET", "xqd");
+        postData.put("xnd", year);
+        postData.put("xqd", term);
+        String html = (String) this.httpUtil
+                .doPost(sUrl, postData, this.header).get("content");
+        Document doc = Jsoup.parse(html);
+        CourseTable courseTable = new CourseTable(year, term);
+        return buildCourseTable(doc, courseTable);
+    }
+
     public ScoreTable getAllScore(String stuNumber) throws Exception {
         String sUrl = this.url + "/xscj_gc.aspx?xh=" + stuNumber;
         String[] csrfAttr = getCsrfAttr(sUrl);
@@ -79,7 +105,7 @@ public class ZfUtil {
     public ScoreTable getScoreByYear(String stuNumber, String year) throws Exception {
         String sUrl = this.url + "/xscj_gc.aspx?xh=" + stuNumber;
         String[] csrfAttr = getCsrfAttr(sUrl);
-        Map<String, String> postData = new HashMap<>(3);
+        Map<String, String> postData = new HashMap<>(4);
         postData.put("__VIEWSTATE", csrfAttr[0]);
         postData.put("__VIEWSTATEGENERATOR", csrfAttr[1]);
         postData.put("ddlXN", year);
@@ -95,7 +121,7 @@ public class ZfUtil {
     public ScoreTable getScoreByTerm(String stuNumber, String year, String term) throws Exception {
         String sUrl = this.url + "/xscj_gc.aspx?xh=" + stuNumber;
         String[] csrfAttr = getCsrfAttr(sUrl);
-        Map<String, String> postData = new HashMap<>(3);
+        Map<String, String> postData = new HashMap<>(5);
         postData.put("__VIEWSTATE", csrfAttr[0]);
         postData.put("__VIEWSTATEGENERATOR", csrfAttr[1]);
         postData.put("ddlXN", year);
@@ -107,6 +133,28 @@ public class ZfUtil {
         Document doc = Jsoup.parse(html);
         ScoreTable scoreTable = new ScoreTable("按学期查询", year, term);
         return buildScoreTable(doc, scoreTable);
+    }
+
+    private CourseTable buildCourseTable(Document doc, CourseTable courseTable) {
+        Elements tr = doc.select("#Table1 tr");
+        CourseTable.Course course;
+        List<String> data;
+        int week;
+        for (int i = 2; i < tr.size(); ++i) {
+            Elements td = tr.get(i).select("td");
+            week = 0;
+            for (Element tdNode : td) {
+                if (tdNode.hasAttr("align")) {
+                    if (tdNode.text().length() != 1) {
+                        data = Arrays.asList(tdNode.text().split(" "));
+                        course = courseTable.new Course(data);
+                        courseTable.addCourseData(week, course);
+                    }
+                    ++week;
+                }
+            }
+        }
+        return courseTable;
     }
 
     private ScoreTable buildScoreTable(Document doc, ScoreTable scoreTable) {
@@ -145,7 +193,7 @@ public class ZfUtil {
     }
 
     /**
-     * utf-8转gbk
+     * gbk转utf-8
      *
      * @param gbkStr gbk字符串
      * @return byte数组

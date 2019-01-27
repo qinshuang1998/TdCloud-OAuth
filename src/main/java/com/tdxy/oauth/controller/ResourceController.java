@@ -3,11 +3,9 @@ package com.tdxy.oauth.controller;
 import com.tdxy.oauth.component.ResponseHelper;
 import com.tdxy.oauth.component.ZfUtil;
 import com.tdxy.oauth.context.AuthUserContext;
-import com.tdxy.oauth.exception.InvalidTokenException;
 import com.tdxy.oauth.model.entity.*;
 import com.tdxy.oauth.service.StudentService;
 import com.tdxy.oauth.service.TeacherService;
-import com.tdxy.oauth.service.TokenService;
 import com.tdxy.oauth.service.ZfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,13 +25,13 @@ public class ResourceController {
     /**
      * 学生用户的一些操作
      */
-    private StudentService studentService;
+    private final StudentService studentService;
 
-    private TeacherService teacherService;
+    private final TeacherService teacherService;
 
-    private ZfService zfService;
+    private final ZfService zfService;
 
-    private AuthUserContext authUserContext;
+    private final AuthUserContext authUserContext;
 
     @Autowired
     public ResourceController(StudentService studentService,
@@ -114,6 +112,40 @@ public class ResourceController {
             ZfUtil zfUtil = new ZfUtil(cookie);
             ScoreTable scoreTable = zfUtil.getScoreByTerm(stuNumber, year, term);
             return result.sendSuccess(scoreTable);
+        } catch (Exception ex) {
+            return result.sendError(ex.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "/getCourse", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseHelper getScoreByTerm() {
+        ResponseHelper<Object> result = new ResponseHelper<>();
+        try {
+            User user = this.authUserContext.getPrincipal();
+            String stuNumber = user.getIdentity();
+            ZfCookie cookie = this.zfService.refreshCookie(stuNumber);
+            ZfUtil zfUtil = new ZfUtil(cookie);
+            CourseTable courseTable = zfUtil.getCourse(stuNumber);
+            return result.sendSuccess(courseTable);
+        } catch (Exception ex) {
+            return result.sendError(ex.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "/getCourseByYearAndTerm", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseHelper getCourseByYearAndTerm(
+            @RequestParam(name = "year") String year,
+            @RequestParam(name = "term") String term) {
+        ResponseHelper<Object> result = new ResponseHelper<>();
+        try {
+            User user = this.authUserContext.getPrincipal();
+            String stuNumber = user.getIdentity();
+            ZfCookie cookie = this.zfService.refreshCookie(stuNumber);
+            ZfUtil zfUtil = new ZfUtil(cookie);
+            CourseTable courseTable = zfUtil.getCourseByYearAndTerm(stuNumber, year, term);
+            return result.sendSuccess(courseTable);
         } catch (Exception ex) {
             return result.sendError(ex.getMessage());
         }

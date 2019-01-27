@@ -24,12 +24,12 @@ public class AuthController {
     /**
      * 第三方应用服务
      */
-    private ClientService clientService;
+    private final ClientService clientService;
 
     /**
      * access_token服务
      */
-    private TokenService tokenService;
+    private final TokenService tokenService;
 
     @Autowired
     public AuthController(ClientService clientService, TokenService tokenService) {
@@ -75,30 +75,42 @@ public class AuthController {
     /**
      * 获取access_token
      *
-     * @param grantType 固定值，authorization_code
-     * @param appId     应用appid
-     * @param appKey    应用key，验证应用是否合法
-     * @param code      授权码，10分钟内有效
-     * @return Token实体
+     * @param grantType
+     * @param appId
+     * @param appKey
+     * @param code
+     * @param refreshToken
+     * @return
      */
     @RequestMapping(value = "/token", method = RequestMethod.GET)
     @ResponseBody
     public ResponseHelper token(
-            @RequestParam(name = "grant_type", required = false, defaultValue = "authorization_code") String grantType,
+            @RequestParam(name = "grant_type") String grantType,
             @RequestParam(name = "app_id") String appId,
             @RequestParam(name = "app_key") String appKey,
-            @RequestParam(name = "code") String code) {
+            @RequestParam(name = "code", required = false) String code,
+            @RequestParam(name = "refresh_token", required = false) String refreshToken) {
         ResponseHelper<Token> result = new ResponseHelper<>();
+        Token token = null;
         try {
             // 检查客户端合法性
             Client client = this.tokenService.checkClient(appId, appKey);
-            // 检查授权码code的合法性
-            User user = this.tokenService.checkCode(client.getAppId(), code);
-            // 授权码合法的话就下发最终的Token
-            Token token = this.tokenService.getToken(client, user, 3600);
-            return result.sendSuccess(token);
+            switch (grantType) {
+                case "authorization_code":
+                    // 检查授权码code的合法性
+                    User user = this.tokenService.checkCode(client.getAppId(), code);
+                    // 授权码合法的话就下发最终的Token
+                    token = this.tokenService.getToken(client, user, 3600);
+                    break;
+                case "refresh_token":
+                    token = this.tokenService.refreshToken(refreshToken, 3600);
+                    break;
+                default:
+                    return result.sendError("无效的grant_type");
+            }
         } catch (Exception ex) {
             return result.sendError(ex.getMessage());
         }
+        return result.sendSuccess(token);
     }
 }
