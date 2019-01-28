@@ -28,7 +28,7 @@ import java.util.Map;
  * @author Qug_
  */
 public class HttpUtil {
-    private CloseableHttpClient httpClient = null;
+    private CloseableHttpClient httpClient;
 
     private CookieStore cookieStore = new BasicCookieStore();
 
@@ -59,7 +59,7 @@ public class HttpUtil {
      * @param url 链接
      * @return Map
      */
-    public Map<String, Object> doGet(String url, Map<String, String> header) {
+    public byte[] doGet(String url, Map<String, String> header) {
         byte[] content;
         HttpGet get = new HttpGet(url);
         CloseableHttpResponse response;
@@ -70,14 +70,10 @@ public class HttpUtil {
                 }
             }
             response = this.httpClient.execute(get);
-            int statusCode = response.getStatusLine().getStatusCode();
             HttpEntity entity = response.getEntity();
             content = EntityUtils.toByteArray(entity);
             response.close();
-            Map<String, Object> result = new HashMap<>(2);
-            result.put("statusCode", statusCode);
-            result.put("content", content);
-            return result;
+            return content;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -117,11 +113,6 @@ public class HttpUtil {
             ex.printStackTrace();
         }
         return result;
-    }
-
-    public void initUtil() throws IOException {
-        this.httpClient.close();
-        init();
     }
 
     public void closeUtil() throws IOException {

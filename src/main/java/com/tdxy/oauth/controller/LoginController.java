@@ -1,5 +1,6 @@
 package com.tdxy.oauth.controller;
 
+import com.tdxy.oauth.OauthSystem;
 import com.tdxy.oauth.component.ResponseHelper;
 import com.tdxy.oauth.model.entity.User;
 import com.tdxy.oauth.model.entity.ZfCookie;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Calendar;
 
 /**
  * 用户登录控制器
@@ -56,7 +56,7 @@ public class LoginController {
     public ModelAndView login(@RequestParam(name = "from") String referer,
                               HttpServletRequest request) {
         ModelAndView modelAndView = new ModelAndView();
-        if (request.getSession().getAttribute("OAuth_User") != null) {
+        if (request.getSession().getAttribute(OauthSystem.Session.SESSION_KEY) != null) {
             modelAndView.setViewName("redirect:" + referer);
         } else {
             modelAndView.setViewName("login");
@@ -102,7 +102,7 @@ public class LoginController {
                     break;
             }
             if (isSuccess) {
-                request.getSession().setAttribute("OAuth_User", user);
+                request.getSession().setAttribute(OauthSystem.Session.SESSION_KEY, user);
                 return result.sendSuccess();
             }
         } catch (Exception ex) {

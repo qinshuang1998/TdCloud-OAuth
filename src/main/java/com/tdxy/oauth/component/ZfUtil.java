@@ -1,5 +1,6 @@
 package com.tdxy.oauth.component;
 
+import com.tdxy.oauth.OauthSystem;
 import com.tdxy.oauth.model.entity.CourseTable;
 import com.tdxy.oauth.model.entity.ScoreTable;
 import com.tdxy.oauth.model.entity.Student;
@@ -10,6 +11,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -17,7 +19,7 @@ public class ZfUtil {
     /**
      * 教务系统地址
      */
-    private String url = "http://42.247.7.170";
+    private String url = OauthSystem.ZhengFang.URL;
 
     private HttpUtil httpUtil;
 
@@ -27,7 +29,7 @@ public class ZfUtil {
         BasicClientCookie cookie = new BasicClientCookie(zfCookie.getCookiePrefix(),
                 zfCookie.getCookieValue());
         cookie.setVersion(0);
-        cookie.setDomain("42.247.7.170");
+        cookie.setDomain(OauthSystem.ZhengFang.DOMAIN);
         cookie.setPath("/");
         this.httpUtil = new HttpUtil(cookie);
         header.put("Referer", this.url);
@@ -40,12 +42,10 @@ public class ZfUtil {
      * @return Studeng实体
      * @throws Exception 异常
      */
-    public Student getInfo(String stuNumber) throws Exception {
+    public Student getInfo(String stuNumber) throws UnsupportedEncodingException {
         String sUrl = this.url + "/xsgrxx.aspx?xh=" + stuNumber;
-        String getContent = new String((byte[]) this.httpUtil
-                .doGet(sUrl, this.header).get("content"), "GBK");
-        String html = new String(getUtf8ByteFromGbkString(getContent),
-                StandardCharsets.UTF_8);
+        String getContent = new String(this.httpUtil.doGet(sUrl, this.header), "GBK");
+        String html = new String(getUtf8ByteFromGbkString(getContent), StandardCharsets.UTF_8);
         Document doc = Jsoup.parse(html);
         Student student = new Student();
         student.setStuNumber(doc.select("#xh").text());
@@ -59,24 +59,22 @@ public class ZfUtil {
         return student;
     }
 
-    public CourseTable getCourse(String stuNumber) throws Exception {
+    public CourseTable getCourse(String stuNumber) throws UnsupportedEncodingException {
         String sUrl = this.url + "/xskbcx.aspx?xh=" + stuNumber;
-        String getContent = new String((byte[]) this.httpUtil
-                .doGet(sUrl, this.header).get("content"), "GBK");
-        String html = new String(getUtf8ByteFromGbkString(getContent),
-                StandardCharsets.UTF_8);
+        String getContent = new String(this.httpUtil.doGet(sUrl, this.header), "GBK");
+        String html = new String(getUtf8ByteFromGbkString(getContent), StandardCharsets.UTF_8);
         Document doc = Jsoup.parse(html);
         Elements el = doc.select("[selected=selected]");
         CourseTable courseTable = new CourseTable(el.get(0).text(), el.get(1).text());
         return buildCourseTable(doc, courseTable);
     }
 
-    public CourseTable getCourseByYearAndTerm(String stuNumber, String year, String term) throws Exception {
+    public CourseTable getCourseByYearAndTerm(String stuNumber, String year, String term) throws UnsupportedEncodingException {
         String sUrl = this.url + "/xskbcx.aspx?xh=" + stuNumber;
-        String[] csrfAttr = getCsrfAttr(sUrl);
+        String[] hiddenView = getHiddenForGet(sUrl);
         Map<String, String> postData = new HashMap<>(5);
-        postData.put("__VIEWSTATE", csrfAttr[0]);
-        postData.put("__VIEWSTATEGENERATOR", csrfAttr[1]);
+        postData.put("__VIEWSTATE", hiddenView[0]);
+        postData.put("__VIEWSTATEGENERATOR", hiddenView[1]);
         postData.put("__EVENTTARGET", "xqd");
         postData.put("xnd", year);
         postData.put("xqd", term);
@@ -87,12 +85,12 @@ public class ZfUtil {
         return buildCourseTable(doc, courseTable);
     }
 
-    public ScoreTable getAllScore(String stuNumber) throws Exception {
+    public ScoreTable getAllScore(String stuNumber) throws UnsupportedEncodingException {
         String sUrl = this.url + "/xscj_gc.aspx?xh=" + stuNumber;
-        String[] csrfAttr = getCsrfAttr(sUrl);
+        String[] hiddenView = getHiddenForGet(sUrl);
         Map<String, String> postData = new HashMap<>(3);
-        postData.put("__VIEWSTATE", csrfAttr[0]);
-        postData.put("__VIEWSTATEGENERATOR", csrfAttr[1]);
+        postData.put("__VIEWSTATE", hiddenView[0]);
+        postData.put("__VIEWSTATEGENERATOR", hiddenView[1]);
         postData.put("Button2", new String("在校学习成绩查询"
                 .getBytes(StandardCharsets.UTF_8), "GBK"));
         String html = (String) this.httpUtil
@@ -102,12 +100,12 @@ public class ZfUtil {
         return buildScoreTable(doc, scoreTable);
     }
 
-    public ScoreTable getScoreByYear(String stuNumber, String year) throws Exception {
+    public ScoreTable getScoreByYear(String stuNumber, String year) throws UnsupportedEncodingException {
         String sUrl = this.url + "/xscj_gc.aspx?xh=" + stuNumber;
-        String[] csrfAttr = getCsrfAttr(sUrl);
+        String[] hiddenView = getHiddenForGet(sUrl);
         Map<String, String> postData = new HashMap<>(4);
-        postData.put("__VIEWSTATE", csrfAttr[0]);
-        postData.put("__VIEWSTATEGENERATOR", csrfAttr[1]);
+        postData.put("__VIEWSTATE", hiddenView[0]);
+        postData.put("__VIEWSTATEGENERATOR", hiddenView[1]);
         postData.put("ddlXN", year);
         postData.put("Button5", new String("按学年查询"
                 .getBytes(StandardCharsets.UTF_8), "GBK"));
@@ -118,12 +116,12 @@ public class ZfUtil {
         return buildScoreTable(doc, scoreTable);
     }
 
-    public ScoreTable getScoreByTerm(String stuNumber, String year, String term) throws Exception {
+    public ScoreTable getScoreByTerm(String stuNumber, String year, String term) throws UnsupportedEncodingException {
         String sUrl = this.url + "/xscj_gc.aspx?xh=" + stuNumber;
-        String[] csrfAttr = getCsrfAttr(sUrl);
+        String[] hiddenView = getHiddenForGet(sUrl);
         Map<String, String> postData = new HashMap<>(5);
-        postData.put("__VIEWSTATE", csrfAttr[0]);
-        postData.put("__VIEWSTATEGENERATOR", csrfAttr[1]);
+        postData.put("__VIEWSTATE", hiddenView[0]);
+        postData.put("__VIEWSTATEGENERATOR", hiddenView[1]);
         postData.put("ddlXN", year);
         postData.put("ddlXQ", term);
         postData.put("Button1", new String("按学期查询"
@@ -180,12 +178,10 @@ public class ZfUtil {
         return scoreTable;
     }
 
-    private String[] getCsrfAttr(String url) throws Exception {
+    private String[] getHiddenForGet(String url) throws UnsupportedEncodingException {
         String[] result = new String[2];
-        String getContent = new String((byte[]) this.httpUtil
-                .doGet(url, this.header).get("content"), "GBK");
-        String html = new String(getUtf8ByteFromGbkString(getContent),
-                StandardCharsets.UTF_8);
+        String getContent = new String(this.httpUtil.doGet(url, this.header), "GBK");
+        String html = new String(getUtf8ByteFromGbkString(getContent), StandardCharsets.UTF_8);
         Document doc = Jsoup.parse(html);
         result[0] = doc.select("[name=__VIEWSTATE]").val();
         result[1] = doc.select("[name=__VIEWSTATEGENERATOR]").val();

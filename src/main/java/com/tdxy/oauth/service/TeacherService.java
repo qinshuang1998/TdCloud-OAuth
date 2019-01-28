@@ -1,5 +1,6 @@
 package com.tdxy.oauth.service;
 
+import com.tdxy.oauth.OauthSystem;
 import com.tdxy.oauth.model.entity.Teacher;
 import com.tdxy.oauth.model.impl.TeacherImpl;
 import org.apache.commons.codec.digest.Md5Crypt;
@@ -16,7 +17,7 @@ public class TeacherService {
     }
 
     public boolean doLogin(String tchName, String tchPwd) {
-        String hashPwd = Md5Crypt.apr1Crypt(tchPwd, "tdxy");
+        String hashPwd = Md5Crypt.apr1Crypt(tchPwd, OauthSystem.Security.MD5_SALT_TCH_PWD);
         int count = this.teacherImpl.getTeacherByNameAndPwd(tchName, hashPwd);
         return (count == 1);
     }

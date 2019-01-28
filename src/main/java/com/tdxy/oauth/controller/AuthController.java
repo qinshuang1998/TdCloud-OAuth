@@ -1,6 +1,8 @@
 package com.tdxy.oauth.controller;
 
+import com.tdxy.oauth.OauthSystem;
 import com.tdxy.oauth.component.ResponseHelper;
+import com.tdxy.oauth.exception.UnknownClientException;
 import com.tdxy.oauth.model.entity.Client;
 import com.tdxy.oauth.model.entity.Token;
 import com.tdxy.oauth.model.entity.User;
@@ -55,7 +57,7 @@ public class AuthController {
         ModelAndView modelAndView = new ModelAndView();
         try {
             // 取得session中的User对象
-            User user = (User) request.getSession().getAttribute("OAuth_User");
+            User user = (User) request.getSession().getAttribute(OauthSystem.Session.SESSION_KEY);
             // 获取Client实体
             Client client = this.clientService.getClient(appId);
             // 下发一个临时的授权码code
@@ -65,8 +67,7 @@ public class AuthController {
             modelAndView.setViewName("auth");
             modelAndView.addObject("client", client);
             modelAndView.addObject("callback", callback);
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (UnknownClientException ex) {
             modelAndView.setViewName("error");
         }
         return modelAndView;
@@ -91,7 +92,7 @@ public class AuthController {
             @RequestParam(name = "code", required = false) String code,
             @RequestParam(name = "refresh_token", required = false) String refreshToken) {
         ResponseHelper<Token> result = new ResponseHelper<>();
-        Token token = null;
+        Token token;
         try {
             // 检查客户端合法性
             Client client = this.tokenService.checkClient(appId, appKey);
@@ -100,10 +101,10 @@ public class AuthController {
                     // 检查授权码code的合法性
                     User user = this.tokenService.checkCode(client.getAppId(), code);
                     // 授权码合法的话就下发最终的Token
-                    token = this.tokenService.getToken(client, user, 3600);
+                    token = this.tokenService.getToken(client, user, OauthSystem.Token.EXPIRE_TIME_SEC);
                     break;
                 case "refresh_token":
-                    token = this.tokenService.refreshToken(refreshToken, 3600);
+                    token = this.tokenService.refreshToken(refreshToken, OauthSystem.Token.EXPIRE_TIME_SEC);
                     break;
                 default:
                     return result.sendError("无效的grant_type");

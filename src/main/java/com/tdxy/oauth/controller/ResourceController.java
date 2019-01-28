@@ -3,6 +3,7 @@ package com.tdxy.oauth.controller;
 import com.tdxy.oauth.component.ResponseHelper;
 import com.tdxy.oauth.component.ZfUtil;
 import com.tdxy.oauth.context.AuthUserContext;
+import com.tdxy.oauth.exception.IllegalUserException;
 import com.tdxy.oauth.model.entity.*;
 import com.tdxy.oauth.service.StudentService;
 import com.tdxy.oauth.service.TeacherService;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.io.IOException;
 
 /**
  * 资源控制器
@@ -79,8 +82,10 @@ public class ResourceController {
             ZfUtil zfUtil = new ZfUtil(cookie);
             ScoreTable scoreTable = zfUtil.getAllScore(stuNumber);
             return result.sendSuccess(scoreTable);
-        } catch (Exception ex) {
+        } catch (IllegalUserException ex) {
             return result.sendError(ex.getMessage());
+        } catch (IOException ex) {
+            return result.sendError("系统错误");
         }
     }
 
@@ -95,8 +100,10 @@ public class ResourceController {
             ZfUtil zfUtil = new ZfUtil(cookie);
             ScoreTable scoreTable = zfUtil.getScoreByYear(stuNumber, year);
             return result.sendSuccess(scoreTable);
-        } catch (Exception ex) {
+        } catch (IllegalUserException ex) {
             return result.sendError(ex.getMessage());
+        } catch (IOException ex) {
+            return result.sendError("系统错误");
         }
     }
 
@@ -112,8 +119,10 @@ public class ResourceController {
             ZfUtil zfUtil = new ZfUtil(cookie);
             ScoreTable scoreTable = zfUtil.getScoreByTerm(stuNumber, year, term);
             return result.sendSuccess(scoreTable);
-        } catch (Exception ex) {
+        } catch (IllegalUserException ex) {
             return result.sendError(ex.getMessage());
+        } catch (IOException ex) {
+            return result.sendError("系统错误");
         }
     }
 
@@ -128,8 +137,10 @@ public class ResourceController {
             ZfUtil zfUtil = new ZfUtil(cookie);
             CourseTable courseTable = zfUtil.getCourse(stuNumber);
             return result.sendSuccess(courseTable);
-        } catch (Exception ex) {
+        } catch (IllegalUserException ex) {
             return result.sendError(ex.getMessage());
+        } catch (IOException ex) {
+            return result.sendError("系统错误");
         }
     }
 
@@ -146,8 +157,10 @@ public class ResourceController {
             ZfUtil zfUtil = new ZfUtil(cookie);
             CourseTable courseTable = zfUtil.getCourseByYearAndTerm(stuNumber, year, term);
             return result.sendSuccess(courseTable);
-        } catch (Exception ex) {
+        } catch (IllegalUserException ex) {
             return result.sendError(ex.getMessage());
+        } catch (IOException ex) {
+            return result.sendError("系统错误");
         }
     }
 }

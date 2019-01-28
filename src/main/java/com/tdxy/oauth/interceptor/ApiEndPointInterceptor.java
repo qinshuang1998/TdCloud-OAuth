@@ -1,6 +1,7 @@
 package com.tdxy.oauth.interceptor;
 
 import com.alibaba.fastjson.JSONObject;
+import com.tdxy.oauth.OauthSystem;
 import com.tdxy.oauth.component.ResponseHelper;
 import com.tdxy.oauth.context.AuthUserContext;
 import org.slf4j.Logger;
@@ -27,7 +28,7 @@ public class ApiEndPointInterceptor implements HandlerInterceptor {
         PrintWriter writer = null;
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json;charset=UTF-8");
-        response.setStatus(401);
+        response.setStatus(OauthSystem.HttpStatus.UNAUTHORIZED);
         ResponseHelper result = new ResponseHelper();
         String error = JSONObject.toJSONString(result.sendError("无效的access_token"));
         try {

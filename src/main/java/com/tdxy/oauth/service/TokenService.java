@@ -1,5 +1,6 @@
 package com.tdxy.oauth.service;
 
+import com.tdxy.oauth.OauthSystem;
 import com.tdxy.oauth.component.RedisUtil;
 import com.tdxy.oauth.exception.IllegalClientException;
 import com.tdxy.oauth.exception.InvalidCodeException;
@@ -52,11 +53,8 @@ public class TokenService {
     public Token getToken(Client client, User user, long time) {
         String accessToken, refreshToken;
         RefreshToken oldRefreshToken = getRefreshToken(client.getAppId(), user.getIdentity());
-        // 如果之前生成过了就直接取出来返回
-        //if (this.redisUtil.hasKey(uid)) {
         // 生成随机的access_token
         accessToken = UUID.randomUUID().toString();
-        //refreshToken = UUID.randomUUID().toString();
         this.redisUtil.set(accessToken, user, time);
         if (oldRefreshToken == null) {
             refreshToken = UUID.randomUUID().toString();
@@ -71,7 +69,7 @@ public class TokenService {
             this.refreshTokenImpl.updateByTokenId(accessToken);
         }
         // 构造Token实体
-        return new Token(accessToken, "bearer", time, refreshToken, "read");
+        return new Token(accessToken, OauthSystem.Token.TYPE, time, refreshToken, OauthSystem.Token.SCOPE);
     }
 
     private RefreshToken getRefreshToken(String appId, String userIdentity) {
@@ -81,7 +79,7 @@ public class TokenService {
     public Token refreshToken(String refreshToken, long time) throws InvalidTokenException {
         RefreshToken refresh = (refreshToken != null) ?
                 this.refreshTokenImpl.findTokenByRefreshToken(refreshToken) : null;
-        String accessToken = null;
+        String accessToken;
         if (refresh != null) {
             if (this.redisUtil.hasKey(refresh.getTokenId())) {
                 this.redisUtil.del(refresh.getTokenId());
@@ -93,7 +91,7 @@ public class TokenService {
         } else {
             throw new InvalidTokenException("无效的refresh_token");
         }
-        return new Token(accessToken, "bearer", time, refreshToken, "read");
+        return new Token(accessToken, OauthSystem.Token.TYPE, time, refreshToken, OauthSystem.Token.SCOPE);
     }
 
     /**
@@ -109,7 +107,7 @@ public class TokenService {
             throw new InvalidCodeException("无效的授权码");
         }
         User user = (User) this.redisUtil.get(code);
-        String prefix = "code:" + appId + "_" + user.getIdentity();
+        String prefix = OauthSystem.Code.PREFIX + appId + "_" + user.getIdentity();
         this.redisUtil.del(prefix);
         this.redisUtil.del(code);
         return user;

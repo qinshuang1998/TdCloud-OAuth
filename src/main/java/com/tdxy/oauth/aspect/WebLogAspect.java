@@ -37,14 +37,16 @@ public class WebLogAspect {
         startTime.set(System.currentTimeMillis());
         // 接收到请求，记录请求内容
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        HttpServletRequest request = attributes.getRequest();
-        // 记录下请求内容
-        SimpleDateFormat time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        logger.info("==========" + time.format(new Date()) + "==========");
-        logger.info("URL : " + request.getRequestURL().toString());
-        logger.info("IP : " + request.getRemoteAddr());
-        logger.info("CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
-        logger.info("ARGS : " + Arrays.toString(joinPoint.getArgs()));
+        if (attributes != null) {
+            HttpServletRequest request = attributes.getRequest();
+            // 记录下请求内容
+            SimpleDateFormat time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            logger.info("==========" + time.format(new Date()) + "==========");
+            logger.info("URL : " + request.getRequestURL().toString());
+            logger.info("IP : " + request.getRemoteAddr());
+            logger.info("CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
+            logger.info("ARGS : " + Arrays.toString(joinPoint.getArgs()));
+        }
     }
 
     @AfterReturning("webLog()")

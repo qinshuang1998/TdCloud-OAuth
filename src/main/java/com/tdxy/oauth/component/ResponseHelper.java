@@ -1,6 +1,7 @@
 package com.tdxy.oauth.component;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.tdxy.oauth.OauthSystem;
 
 /**
  * 请求统一响应格式
@@ -14,7 +15,7 @@ public class ResponseHelper<T> {
     private Boolean result;
 
     @JSONField(ordinal = 2)
-    private Integer code = 0;
+    private Integer code = OauthSystem.HttpStatus.UNDEFINE;
 
     @JSONField(ordinal = 3)
     private String msg = "";
@@ -24,20 +25,20 @@ public class ResponseHelper<T> {
 
     public ResponseHelper<T> sendSuccess() {
         this.result = true;
-        this.code = 200;
+        this.code = OauthSystem.HttpStatus.SUCCESS;
         return this;
     }
 
     public ResponseHelper<T> sendSuccess(T data) {
         this.result = true;
-        this.code = 200;
+        this.code = OauthSystem.HttpStatus.SUCCESS;
         this.data = data;
         return this;
     }
 
     public ResponseHelper<T> sendSuccess(T data, String msg) {
         this.result = true;
-        this.code = 200;
+        this.code = OauthSystem.HttpStatus.SUCCESS;
         this.data = data;
         this.msg = msg;
         return this;
@@ -45,13 +46,13 @@ public class ResponseHelper<T> {
 
     public ResponseHelper<T> sendError() {
         this.result = false;
-        this.code = 500;
+        this.code = OauthSystem.HttpStatus.ERROR;
         return this;
     }
 
     public ResponseHelper<T> sendError(String msg) {
         this.result = false;
-        this.code = 500;
+        this.code = OauthSystem.HttpStatus.ERROR;
         this.msg = msg;
         return this;
     }

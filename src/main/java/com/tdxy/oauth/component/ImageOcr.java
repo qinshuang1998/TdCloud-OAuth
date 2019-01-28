@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -44,7 +45,7 @@ public class ImageOcr {
         return 0;
     }
 
-    private BufferedImage removeBackgroud(String picFile) throws Exception {
+    private BufferedImage removeBackgroud(String picFile) throws IOException {
         BufferedImage img = ImageIO.read(new File(picFile));
         img = img.getSubimage(5, 1, img.getWidth() - 5, img.getHeight() - 2);
         img = img.getSubimage(0, 0, 50, img.getHeight());
@@ -62,8 +63,8 @@ public class ImageOcr {
         return img;
     }
 
-    private List<BufferedImage> splitImage(BufferedImage img) throws Exception {
-        List<BufferedImage> subImgs = new ArrayList<BufferedImage>();
+    private List<BufferedImage> splitImage(BufferedImage img) {
+        List<BufferedImage> subImgs = new ArrayList<>();
         int width = img.getWidth() / 4;
         int height = img.getHeight();
         subImgs.add(img.getSubimage(0, 0, width, height));
@@ -73,13 +74,15 @@ public class ImageOcr {
         return subImgs;
     }
 
-    private Map<BufferedImage, String> loadTrainData() throws Exception {
+    private Map<BufferedImage, String> loadTrainData() throws IOException {
         if (trainMap == null) {
-            Map<BufferedImage, String> map = new HashMap<>();
+            Map<BufferedImage, String> map = new HashMap<>(2);
             File dir = new File(trainPath);
             File[] files = dir.listFiles();
-            for (File file : files) {
-                map.put(ImageIO.read(file), file.getName().charAt(0) + "");
+            if (files != null) {
+                for (File file : files) {
+                    map.put(ImageIO.read(file), file.getName().charAt(0) + "");
+                }
             }
             trainMap = map;
         }
@@ -97,11 +100,11 @@ public class ImageOcr {
             if (Math.abs(bi.getWidth() - width) > 2) {
                 continue;
             }
-            int widthmin = width < bi.getWidth() ? width : bi.getWidth();
-            int heightmin = height < bi.getHeight() ? height : bi.getHeight();
+            int widthMin = width < bi.getWidth() ? width : bi.getWidth();
+            int heightMin = height < bi.getHeight() ? height : bi.getHeight();
             Label1:
-            for (int x = 0; x < widthmin; ++x) {
-                for (int y = 0; y < heightmin; ++y) {
+            for (int x = 0; x < widthMin; ++x) {
+                for (int y = 0; y < heightMin; ++y) {
                     if (isBlack(img.getRGB(x, y)) != isBlack(bi.getRGB(x, y))) {
                         count++;
                         if (count >= min) {
@@ -118,12 +121,12 @@ public class ImageOcr {
         return result;
     }
 
-    private void delFile(String file) throws Exception {
+    private void delFile(String file) throws IOException {
         Path filePath = Paths.get(file);
         Files.delete(filePath);
     }
 
-    public String getAllOcr(String file) throws Exception {
+    public String getAllOcr(String file) throws IOException {
         BufferedImage img = removeBackgroud(file);
         List<BufferedImage> listImg = splitImage(img);
         Map<BufferedImage, String> map = loadTrainData();

@@ -1,5 +1,6 @@
 package com.tdxy.oauth.interceptor;
 
+import com.tdxy.oauth.OauthSystem;
 import com.tdxy.oauth.context.AuthUserContext;
 import com.tdxy.oauth.model.entity.User;
 import com.tdxy.oauth.service.TokenService;
@@ -25,8 +26,8 @@ public class ApiHeaderInterceptor implements HandlerInterceptor {
         if (this.authUserContext.isAuthenticated()) {
             return true;
         }
-        if (request.getHeader("Authorization") != null) {
-            String token = request.getHeader("Authorization").substring(7);
+        if (request.getHeader(OauthSystem.Token.HEADER) != null) {
+            String token = request.getHeader(OauthSystem.Token.HEADER).substring(OauthSystem.Token.HEAD.length());
             User user = null;
             try {
                 user = this.tokenService.getUserByToken(token);
