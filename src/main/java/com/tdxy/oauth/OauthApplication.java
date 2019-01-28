@@ -33,13 +33,13 @@ public class OauthApplication {
         // 3.在converter中添加配置信息
         fastConverter.setFastJsonConfig(fastJsonConfig);
         // content-type的设置
-        List<MediaType> fastMediaTypes = new ArrayList<>();
+        List<MediaType> fastMediaTypes = new ArrayList<>(1);
         fastMediaTypes.add(MediaType.APPLICATION_JSON_UTF8);
         fastConverter.setSupportedMediaTypes(fastMediaTypes);
         // 4.将converter赋值给HttpMessageConverter
-        HttpMessageConverter<?> converter = fastConverter;
+        // HttpMessageConverter<?> converter = fastConverter;
         // 5.返回HttpMessageConverters对象
-        return new HttpMessageConverters(converter);
+        return new HttpMessageConverters((HttpMessageConverter<?>) fastConverter);
     }
 
     public static void main(String[] args) {

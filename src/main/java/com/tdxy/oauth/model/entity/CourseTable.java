@@ -53,56 +53,21 @@ public class CourseTable {
     }
 
     public class Course {
-        @JSONField(ordinal = 1)
-        private String courseName;
-        @JSONField(ordinal = 2)
-        private String courseTime;
-        @JSONField(ordinal = 3)
-        private String courseTeacher;
-        @JSONField(ordinal = 4)
-        private String courseAddress;
+        private List<String> courseInfo;
 
         public Course() {
         }
 
         public Course(List<String> data) {
-            int length = data.size();
-            this.courseName = (length >= 1) ? data.get(0) : "";
-            this.courseTime = (length >= 2) ? data.get(1) : "";
-            this.courseTeacher = (length >= 3) ? data.get(2) : "";
-            this.courseAddress = (length >= 4) ? data.get(3) : "";
+            this.courseInfo = data;
         }
 
-        public String getCourseName() {
-            return courseName;
+        public List<String> getCourseInfo() {
+            return courseInfo;
         }
 
-        public void setCourseName(String courseName) {
-            this.courseName = courseName;
-        }
-
-        public String getCourseTime() {
-            return courseTime;
-        }
-
-        public void setCourseTime(String courseTime) {
-            this.courseTime = courseTime;
-        }
-
-        public String getCourseTeacher() {
-            return courseTeacher;
-        }
-
-        public void setCourseTeacher(String courseTeacher) {
-            this.courseTeacher = courseTeacher;
-        }
-
-        public String getCourseAddress() {
-            return courseAddress;
-        }
-
-        public void setCourseAddress(String courseAddress) {
-            this.courseAddress = courseAddress;
+        public void setCourseInfo(List<String> courseInfo) {
+            this.courseInfo = courseInfo;
         }
     }
 }
