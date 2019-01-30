@@ -52,7 +52,7 @@ public class TokenService {
      */
     public Token getToken(Client client, User user, long time) {
         String accessToken, refreshToken;
-        RefreshToken oldRefreshToken = getRefreshToken(client.getAppId(), user.getIdentity());
+        RefreshToken oldRefreshToken = this.refreshTokenImpl.findByAppIdAndUser(client.getAppId(), user.getIdentity());
         // 生成随机的access_token
         accessToken = UUID.randomUUID().toString();
         this.redisUtil.set(accessToken, user, time);
@@ -66,14 +66,10 @@ public class TokenService {
             if (this.redisUtil.hasKey(oldRefreshToken.getTokenId())) {
                 this.redisUtil.del(oldRefreshToken.getTokenId());
             }
-            this.refreshTokenImpl.updateByTokenId(accessToken);
+            this.refreshTokenImpl.updateByTokenId(accessToken, refreshToken);
         }
         // 构造Token实体
         return new Token(accessToken, OauthSystem.Token.TYPE, time, refreshToken, OauthSystem.Token.SCOPE);
-    }
-
-    private RefreshToken getRefreshToken(String appId, String userIdentity) {
-        return this.refreshTokenImpl.findByAppIdAndUser(appId, userIdentity);
     }
 
     public Token refreshToken(String refreshToken, long time) throws InvalidTokenException {
@@ -87,7 +83,7 @@ public class TokenService {
             User user = new User(refresh.getUserRole(), refresh.getUserIdentity());
             accessToken = UUID.randomUUID().toString();
             this.redisUtil.set(accessToken, user, time);
-            this.refreshTokenImpl.updateByTokenId(accessToken);
+            this.refreshTokenImpl.updateByTokenId(accessToken, refreshToken);
         } else {
             throw new InvalidTokenException("无效的refresh_token");
         }

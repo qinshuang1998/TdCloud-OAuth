@@ -18,7 +18,7 @@ public class TeacherImpl {
         return this.teacherMapper.findAllByWorknum(tchWorknum);
     }
 
-    public int getTeacherByNameAndPwd(String tchName, String tchPwd) {
+    public Teacher getTeacherByNameAndPwd(String tchName, String tchPwd) {
         return this.teacherMapper.findAllByNameAndPwd(tchName, tchPwd);
     }
 }

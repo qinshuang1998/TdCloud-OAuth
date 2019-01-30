@@ -2,6 +2,7 @@ package com.tdxy.oauth.controller;
 
 import com.tdxy.oauth.OauthSystem;
 import com.tdxy.oauth.component.ResponseHelper;
+import com.tdxy.oauth.model.entity.Teacher;
 import com.tdxy.oauth.model.entity.User;
 import com.tdxy.oauth.model.entity.ZfCookie;
 import com.tdxy.oauth.service.TeacherService;
@@ -84,25 +85,29 @@ public class LoginController {
         try {
             boolean isSuccess = false;
             // 用来标识用户，包含用户角色和用户身份
-            User user = null;
+            String identity = null;
             switch (role) {
                 case "student":
-                    user = new User("student", username);
-                    String hash = Md5Crypt.apr1Crypt(username + Md5Crypt.apr1Crypt(password, "pwd"), "cache");
+                    identity = username;
+                    String hash = Md5Crypt.apr1Crypt(
+                            username + Md5Crypt.apr1Crypt(password, OauthSystem.Security.MD5_SALT_STU_PWD),
+                            OauthSystem.Security.MD5_SALT_CACHE);
                     ZfCookie cookie = this.zfService.getCookieByHash(hash);
                     int cookieStatus = this.zfService.checkCookie(cookie);
                     isSuccess = (cookieStatus == 1) || this.zfService.doLogin(username, password);
                     break;
                 case "teacher":
-                    String tchName = this.teacherService.getTeacherByName(username).getTchWorknum();
-                    user = new User("teacher", tchName);
-                    isSuccess = this.teacherService.doLogin(username, password);
+                    Teacher teacher = this.teacherService.doLogin(username, password);
+                    if (teacher != null) {
+                        identity = teacher.getTchWorknum();
+                        isSuccess = true;
+                    }
                     break;
                 default:
                     break;
             }
-            if (isSuccess) {
-                request.getSession().setAttribute(OauthSystem.Session.SESSION_KEY, user);
+            if (isSuccess && identity != null) {
+                request.getSession().setAttribute(OauthSystem.Session.SESSION_KEY, new User(role, identity));
                 return result.sendSuccess();
             }
         } catch (Exception ex) {

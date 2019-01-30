@@ -10,10 +10,10 @@ public interface ZfCookieMapper {
             "VALUES (#{stuNumber}, #{cookieHash}, #{cookiePrefix}, #{cookieValue})")
     int insertOne(ZfCookie cookie);
 
-    @Select("SELECT * FROM oauth_zf_cookie WHERE stu_number = #{arg0}")
+    @Select("SELECT * FROM oauth_zf_cookie WHERE stu_number = #{stuNumber}")
     ZfCookie selectByStuNumber(String stuNumber);
 
-    @Select("SELECT * FROM oauth_zf_cookie WHERE cookie_hash = #{arg0}")
+    @Select("SELECT * FROM oauth_zf_cookie WHERE cookie_hash = #{cookieHash}")
     ZfCookie selectByHash(String cookieHash);
 
     @Update("UPDATE oauth_zf_cookie SET cookie_hash = #{cookieHash}, cookie_value = #{cookieValue} WHERE stu_number = #{stuNumber}")

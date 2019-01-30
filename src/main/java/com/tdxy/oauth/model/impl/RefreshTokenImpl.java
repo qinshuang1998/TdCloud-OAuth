@@ -18,8 +18,8 @@ public class RefreshTokenImpl {
         this.refreshTokenMapper.addOne(refreshToken);
     }
 
-    public void updateByTokenId(String tokenId) {
-        this.refreshTokenMapper.updateByTokenId(tokenId);
+    public void updateByTokenId(String tokenId, String refreshToken) {
+        this.refreshTokenMapper.updateByTokenId(tokenId, refreshToken);
     }
 
     public RefreshToken findTokenByRefreshToken(String refreshToken) {

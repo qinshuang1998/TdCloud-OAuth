@@ -16,10 +16,9 @@ public class TeacherService {
         this.teacherImpl = teacherImpl;
     }
 
-    public boolean doLogin(String tchName, String tchPwd) {
+    public Teacher doLogin(String tchName, String tchPwd) {
         String hashPwd = Md5Crypt.apr1Crypt(tchPwd, OauthSystem.Security.MD5_SALT_TCH_PWD);
-        int count = this.teacherImpl.getTeacherByNameAndPwd(tchName, hashPwd);
-        return (count == 1);
+        return this.teacherImpl.getTeacherByNameAndPwd(tchName, hashPwd);
     }
 
     public Teacher getTeacherByName(String tchName) {

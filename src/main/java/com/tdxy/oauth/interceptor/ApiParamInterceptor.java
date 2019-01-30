@@ -31,7 +31,7 @@ public class ApiParamInterceptor implements HandlerInterceptor {
                 User user = this.tokenService.getUserByToken(token);
                 this.authUserContext.setPrincipal(user);
             } catch (Exception ex) {
-                logger.info("GET参数传递的token验证失败");
+                logger.debug("GET参数传递的token验证失败");
             }
         }
         return true;

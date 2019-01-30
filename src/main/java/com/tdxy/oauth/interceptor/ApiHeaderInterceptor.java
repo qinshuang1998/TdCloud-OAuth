@@ -33,7 +33,7 @@ public class ApiHeaderInterceptor implements HandlerInterceptor {
                 user = this.tokenService.getUserByToken(token);
                 this.authUserContext.setPrincipal(user);
             } catch (Exception ex) {
-                logger.info("Authorization头传递的token验证失败");
+                logger.debug("Authorization头传递的token验证失败");
             }
         }
         return true;
