@@ -1,6 +1,6 @@
 package com.tdxy.oauth.model.mapper;
 
-import com.tdxy.oauth.model.entity.Client;
+import com.tdxy.oauth.model.po.Client;
 import org.apache.ibatis.annotations.Select;
 
 public interface ClientMapper {

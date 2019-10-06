@@ -1,7 +1,7 @@
 package com.tdxy.oauth.service;
 
-import com.tdxy.oauth.model.entity.Student;
-import com.tdxy.oauth.model.impl.StudentImpl;
+import com.tdxy.oauth.model.po.Student;
+import com.tdxy.oauth.model.dao.StudentDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +15,11 @@ public class StudentService {
     /**
      * 学生DAO层
      */
-    private final StudentImpl studentImpl;
+    private final StudentDao studentDao;
 
     @Autowired
-    public StudentService(StudentImpl studentImpl) {
-        this.studentImpl = studentImpl;
+    public StudentService(StudentDao studentDao) {
+        this.studentDao = studentDao;
     }
 
     /**
@@ -28,6 +28,6 @@ public class StudentService {
      * @return 学生实体
      */
     public Student getInfo(String identity) {
-        return this.studentImpl.getStudent(identity);
+        return this.studentDao.getStudent(identity);
     }
 }

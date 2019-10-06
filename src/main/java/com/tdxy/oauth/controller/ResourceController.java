@@ -1,13 +1,18 @@
 package com.tdxy.oauth.controller;
 
-import com.tdxy.oauth.component.ResponseHelper;
-import com.tdxy.oauth.component.ZfUtil;
+import com.tdxy.oauth.common.ResponseHelper;
+import com.tdxy.oauth.common.ZFUtil;
 import com.tdxy.oauth.context.AuthUserContext;
 import com.tdxy.oauth.exception.IllegalUserException;
-import com.tdxy.oauth.model.entity.*;
+import com.tdxy.oauth.model.bo.CourseTable;
+import com.tdxy.oauth.model.bo.ScoreTable;
+import com.tdxy.oauth.model.bo.User;
+import com.tdxy.oauth.model.bo.ZFCookie;
+import com.tdxy.oauth.model.po.Student;
+import com.tdxy.oauth.model.po.Teacher;
 import com.tdxy.oauth.service.StudentService;
 import com.tdxy.oauth.service.TeacherService;
-import com.tdxy.oauth.service.ZfService;
+import com.tdxy.oauth.service.ZFService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,13 +37,13 @@ public class ResourceController {
 
     private final TeacherService teacherService;
 
-    private final ZfService zfService;
+    private final ZFService zfService;
 
     private final AuthUserContext authUserContext;
 
     @Autowired
     public ResourceController(StudentService studentService,
-                              TeacherService teacherService, ZfService zfService, AuthUserContext authUserContext) {
+                              TeacherService teacherService, ZFService zfService, AuthUserContext authUserContext) {
         this.studentService = studentService;
         this.teacherService = teacherService;
         this.zfService = zfService;
@@ -78,13 +83,14 @@ public class ResourceController {
         try {
             User user = this.authUserContext.getPrincipal();
             String stuNumber = user.getIdentity();
-            ZfCookie cookie = this.zfService.refreshCookie(stuNumber);
-            ZfUtil zfUtil = new ZfUtil(cookie);
+            ZFCookie cookie = this.zfService.refreshCookie(stuNumber);
+            ZFUtil zfUtil = new ZFUtil(cookie);
             ScoreTable scoreTable = zfUtil.getAllScore(stuNumber);
             return result.sendSuccess(scoreTable);
         } catch (IllegalUserException ex) {
             return result.sendError(ex.getMessage());
         } catch (IOException ex) {
+            ex.printStackTrace();
             return result.sendError("系统错误");
         }
     }
@@ -96,13 +102,14 @@ public class ResourceController {
         try {
             User user = this.authUserContext.getPrincipal();
             String stuNumber = user.getIdentity();
-            ZfCookie cookie = this.zfService.refreshCookie(stuNumber);
-            ZfUtil zfUtil = new ZfUtil(cookie);
+            ZFCookie cookie = this.zfService.refreshCookie(stuNumber);
+            ZFUtil zfUtil = new ZFUtil(cookie);
             ScoreTable scoreTable = zfUtil.getScoreByYear(stuNumber, year);
             return result.sendSuccess(scoreTable);
         } catch (IllegalUserException ex) {
             return result.sendError(ex.getMessage());
         } catch (IOException ex) {
+            ex.printStackTrace();
             return result.sendError("系统错误");
         }
     }
@@ -115,13 +122,14 @@ public class ResourceController {
         try {
             User user = this.authUserContext.getPrincipal();
             String stuNumber = user.getIdentity();
-            ZfCookie cookie = this.zfService.refreshCookie(stuNumber);
-            ZfUtil zfUtil = new ZfUtil(cookie);
+            ZFCookie cookie = this.zfService.refreshCookie(stuNumber);
+            ZFUtil zfUtil = new ZFUtil(cookie);
             ScoreTable scoreTable = zfUtil.getScoreByTerm(stuNumber, year, term);
             return result.sendSuccess(scoreTable);
         } catch (IllegalUserException ex) {
             return result.sendError(ex.getMessage());
         } catch (IOException ex) {
+            ex.printStackTrace();
             return result.sendError("系统错误");
         }
     }
@@ -133,13 +141,14 @@ public class ResourceController {
         try {
             User user = this.authUserContext.getPrincipal();
             String stuNumber = user.getIdentity();
-            ZfCookie cookie = this.zfService.refreshCookie(stuNumber);
-            ZfUtil zfUtil = new ZfUtil(cookie);
+            ZFCookie cookie = this.zfService.refreshCookie(stuNumber);
+            ZFUtil zfUtil = new ZFUtil(cookie);
             CourseTable courseTable = zfUtil.getCourse(stuNumber);
             return result.sendSuccess(courseTable);
         } catch (IllegalUserException ex) {
             return result.sendError(ex.getMessage());
         } catch (IOException ex) {
+            ex.printStackTrace();
             return result.sendError("系统错误");
         }
     }
@@ -153,13 +162,14 @@ public class ResourceController {
         try {
             User user = this.authUserContext.getPrincipal();
             String stuNumber = user.getIdentity();
-            ZfCookie cookie = this.zfService.refreshCookie(stuNumber);
-            ZfUtil zfUtil = new ZfUtil(cookie);
+            ZFCookie cookie = this.zfService.refreshCookie(stuNumber);
+            ZFUtil zfUtil = new ZFUtil(cookie);
             CourseTable courseTable = zfUtil.getCourseByYearAndTerm(stuNumber, year, term);
             return result.sendSuccess(courseTable);
         } catch (IllegalUserException ex) {
             return result.sendError(ex.getMessage());
         } catch (IOException ex) {
+            ex.printStackTrace();
             return result.sendError("系统错误");
         }
     }

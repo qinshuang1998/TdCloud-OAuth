@@ -6,7 +6,7 @@ package com.tdxy.oauth.exception;
  * @author Qug_
  */
 public class InvalidTokenException extends Exception {
-    private static final long serialVersionUID = -5808028192716121382L;
+    private static final long serialVersionUID = 1L;
 
     public InvalidTokenException(String message) {
         super(message);

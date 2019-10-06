@@ -1,6 +1,6 @@
 package com.tdxy.oauth.interceptor;
 
-import com.tdxy.oauth.OauthSystem;
+import com.tdxy.oauth.Constant;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,9 +17,9 @@ public class AccessInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
-        if (request.getSession().getAttribute(OauthSystem.Session.SESSION_KEY) == null) {
+        if (request.getSession().getAttribute(Constant.Session.SESSION_KEY) == null) {
             String callBack = URLEncoder.encode(request.getRequestURL() + "?" + request.getQueryString(), "utf-8");
-            response.setStatus(OauthSystem.HttpStatus.REDIRECT);
+            response.setStatus(Constant.HttpStatus.REDIRECT);
             response.sendRedirect("/login?from=" + callBack);
             return false;
         }

@@ -1,6 +1,6 @@
 package com.tdxy.oauth.model.mapper;
 
-import com.tdxy.oauth.model.entity.Student;
+import com.tdxy.oauth.model.po.Student;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;

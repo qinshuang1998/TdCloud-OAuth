@@ -1,8 +1,8 @@
 package com.tdxy.oauth.interceptor;
 
 import com.tdxy.oauth.context.AuthUserContext;
-import com.tdxy.oauth.model.entity.User;
-import com.tdxy.oauth.service.TokenService;
+import com.tdxy.oauth.model.bo.User;
+import com.tdxy.oauth.service.token.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -6,7 +6,7 @@ package com.tdxy.oauth.exception;
  * @author Qug_
  */
 public class IllegalClientException extends Exception {
-    private static final long serialVersionUID = -1885404188096380912L;
+    private static final long serialVersionUID = 1L;
 
     public IllegalClientException(String message) {
         super(message);

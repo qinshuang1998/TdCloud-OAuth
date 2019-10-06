@@ -1,14 +1,10 @@
 package com.tdxy.oauth.controller;
 
-import com.tdxy.oauth.OauthSystem;
-import com.tdxy.oauth.component.ResponseHelper;
-import com.tdxy.oauth.model.entity.Teacher;
-import com.tdxy.oauth.model.entity.User;
-import com.tdxy.oauth.model.entity.ZfCookie;
-import com.tdxy.oauth.service.TeacherService;
-import com.tdxy.oauth.service.ZfService;
-import org.apache.commons.codec.digest.Md5Crypt;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.tdxy.oauth.Constant;
+import com.tdxy.oauth.common.ResponseHelper;
+import com.tdxy.oauth.service.login.factory.LoginStrategyFactory;
+import com.tdxy.oauth.model.bo.LoginResult;
+import com.tdxy.oauth.service.login.LoginStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,33 +16,12 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * 用户登录控制器
- * <p>
- * ZfService作为有状态Bean，
- * 要么控制同步，要么控制器多例，要么Service多例
- * 单例Bean依赖多例Bean切记采用方法注入依赖，否则并发下数据会互窜
- * =============================================
- * 以上方案不太好，我还是尽量避免有状态Bean的出现
- * 所以把ZfService的cookie信息以参数传递
- * Spring和Struts控制器区别就是Struts是默认多例的
  *
  * @author Qug_
  */
 @Controller
 @RequestMapping("/")
 public class LoginController {
-    /**
-     * 正方服务
-     */
-    private final ZfService zfService;
-
-    private final TeacherService teacherService;
-
-    @Autowired
-    public LoginController(ZfService zfService, TeacherService teacherService) {
-        this.zfService = zfService;
-        this.teacherService = teacherService;
-    }
-
     /**
      * 用户登录视图
      *
@@ -56,13 +31,11 @@ public class LoginController {
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public ModelAndView login(@RequestParam(name = "from") String referer,
                               HttpServletRequest request) {
-        ModelAndView modelAndView = new ModelAndView();
-        if (request.getSession().getAttribute(OauthSystem.Session.SESSION_KEY) != null) {
-            modelAndView.setViewName("redirect:" + referer);
-        } else {
-            modelAndView.setViewName("login");
-            modelAndView.addObject("referer", referer);
+        if (request.getSession().getAttribute(Constant.Session.SESSION_KEY) != null) {
+            return new ModelAndView("redirect:" + referer);
         }
+        ModelAndView modelAndView = new ModelAndView("login");
+        modelAndView.addObject("referer", referer);
         return modelAndView;
     }
 
@@ -81,37 +54,13 @@ public class LoginController {
                                   @RequestParam(name = "password") String password,
                                   @RequestParam(name = "role") String role,
                                   HttpServletRequest request) {
-        ResponseHelper<Object> result = new ResponseHelper<>();
-        try {
-            boolean isSuccess = false;
-            // 用来标识用户，包含用户角色和用户身份
-            String identity = null;
-            switch (role) {
-                case "student":
-                    identity = username;
-                    String hash = Md5Crypt.apr1Crypt(
-                            username + Md5Crypt.apr1Crypt(password, OauthSystem.Security.MD5_SALT_STU_PWD),
-                            OauthSystem.Security.MD5_SALT_CACHE);
-                    ZfCookie cookie = this.zfService.getCookieByHash(hash);
-                    int cookieStatus = this.zfService.checkCookie(cookie);
-                    isSuccess = (cookieStatus == 1) || this.zfService.doLogin(username, password);
-                    break;
-                case "teacher":
-                    Teacher teacher = this.teacherService.doLogin(username, password);
-                    if (teacher != null) {
-                        identity = teacher.getTchWorknum();
-                        isSuccess = true;
-                    }
-                    break;
-                default:
-                    break;
-            }
-            if (isSuccess && identity != null) {
-                request.getSession().setAttribute(OauthSystem.Session.SESSION_KEY, new User(role, identity));
-                return result.sendSuccess();
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        ResponseHelper<String> result = new ResponseHelper<>();
+        // 登录策略
+        LoginStrategy loginStrategy = LoginStrategyFactory.getStrategy(role);
+        LoginResult loginResult = loginStrategy.login(username, password, role);
+        if (loginResult.isSuccess()) {
+            request.getSession().setAttribute(Constant.Session.SESSION_KEY, loginResult.getUser());
+            return result.sendSuccess();
         }
         return result.sendError("当前登录失败");
     }

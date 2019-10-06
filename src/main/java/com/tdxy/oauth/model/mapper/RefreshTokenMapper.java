@@ -1,6 +1,6 @@
 package com.tdxy.oauth.model.mapper;
 
-import com.tdxy.oauth.model.entity.RefreshToken;
+import com.tdxy.oauth.model.bo.RefreshToken;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;

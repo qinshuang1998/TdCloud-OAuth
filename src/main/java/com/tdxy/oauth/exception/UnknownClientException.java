@@ -6,7 +6,7 @@ package com.tdxy.oauth.exception;
  * @author Qug_
  */
 public class UnknownClientException extends Exception {
-    private static final long serialVersionUID = 4647260137611886630L;
+    private static final long serialVersionUID = 1L;
 
     public UnknownClientException(String message) {
         super(message);

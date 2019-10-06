@@ -1,9 +1,9 @@
 package com.tdxy.oauth.interceptor;
 
-import com.tdxy.oauth.OauthSystem;
+import com.tdxy.oauth.Constant;
 import com.tdxy.oauth.context.AuthUserContext;
-import com.tdxy.oauth.model.entity.User;
-import com.tdxy.oauth.service.TokenService;
+import com.tdxy.oauth.model.bo.User;
+import com.tdxy.oauth.service.token.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +26,8 @@ public class ApiHeaderInterceptor implements HandlerInterceptor {
         if (this.authUserContext.isAuthenticated()) {
             return true;
         }
-        if (request.getHeader(OauthSystem.Token.HEADER) != null) {
-            String token = request.getHeader(OauthSystem.Token.HEADER).substring(OauthSystem.Token.HEAD.length());
+        if (request.getHeader(Constant.Token.HEADER) != null) {
+            String token = request.getHeader(Constant.Token.HEADER).substring(Constant.Token.HEAD.length());
             User user = null;
             try {
                 user = this.tokenService.getUserByToken(token);

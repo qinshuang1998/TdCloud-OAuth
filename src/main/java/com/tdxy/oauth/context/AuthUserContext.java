@@ -1,6 +1,6 @@
 package com.tdxy.oauth.context;
 
-import com.tdxy.oauth.model.entity.User;
+import com.tdxy.oauth.model.bo.User;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;

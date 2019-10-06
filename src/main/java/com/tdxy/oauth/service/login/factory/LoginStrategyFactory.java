@@ -1,0 +1,19 @@
+package com.tdxy.oauth.service.login.factory;
+
+import com.tdxy.oauth.common.ApplicationContextUtil;
+import com.tdxy.oauth.service.login.LoginStrategy;
+import org.springframework.context.ApplicationContext;
+
+import java.util.Map;
+
+public class LoginStrategyFactory {
+    private static Map<String, LoginStrategy> loginStrategy;
+
+    public static LoginStrategy getStrategy(String role) {
+        if (loginStrategy == null) {
+            ApplicationContext ac = ApplicationContextUtil.getApplicationContext();
+            loginStrategy = ac.getBeansOfType(LoginStrategy.class);
+        }
+        return loginStrategy.get(role);
+    }
+}

@@ -1,19 +1,29 @@
 package com.tdxy.oauth.controller;
 
-import com.tdxy.oauth.OauthSystem;
-import com.tdxy.oauth.component.ResponseHelper;
-import com.tdxy.oauth.exception.UnknownClientException;
-import com.tdxy.oauth.model.entity.Client;
-import com.tdxy.oauth.model.entity.Token;
-import com.tdxy.oauth.model.entity.User;
+import com.tdxy.oauth.Constant;
+import com.tdxy.oauth.common.ApplicationContextUtil;
+import com.tdxy.oauth.common.ResponseHelper;
+import com.tdxy.oauth.exception.*;
+import com.tdxy.oauth.model.bo.GetTokenParam;
+import com.tdxy.oauth.model.po.Client;
+import com.tdxy.oauth.model.po.Token;
+import com.tdxy.oauth.model.bo.User;
 import com.tdxy.oauth.service.ClientService;
-import com.tdxy.oauth.service.TokenService;
+import com.tdxy.oauth.service.token.DispatcherAdapter;
+import com.tdxy.oauth.service.token.TokenHandlerAdapter;
+import com.tdxy.oauth.service.token.TokenService;
+import com.tdxy.oauth.service.token.type.TokenHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.ContextLoader;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 /**
  * OAUTH授权控制器
@@ -54,63 +64,48 @@ public class AuthController {
             @RequestParam(name = "app_id") String appId,
             @RequestParam(name = "state", required = false) String state,
             HttpServletRequest request) {
-        ModelAndView modelAndView = new ModelAndView();
+        // 获取Client实体
+        Client client = null;
         try {
-            // 取得session中的User对象
-            User user = (User) request.getSession().getAttribute(OauthSystem.Session.SESSION_KEY);
-            // 获取Client实体
-            Client client = this.clientService.getClient(appId);
-            // 下发一个临时的授权码code
-            String code = this.clientService.getCode(appId, user);
-            // 构造回调地址
-            String callback = client.getRedirectUri() + "?code=" + code + "&state=" + state;
-            modelAndView.setViewName("auth");
-            modelAndView.addObject("client", client);
-            modelAndView.addObject("callback", callback);
-        } catch (UnknownClientException ex) {
-            modelAndView.setViewName("error");
+            client = this.clientService.getClient(appId);
+        } catch (UnknownClientException e) {
+            return new ModelAndView("error");
         }
+        // 取得session中的User对象
+        User user = (User) request.getSession().getAttribute(Constant.Session.SESSION_KEY);
+        // 下发一个临时的授权码code
+        String code = this.clientService.getCode(appId, user);
+        // 构造回调地址
+        String callback = client.getRedirectUri() + "?code=" + code + "&state=" + state;
+        ModelAndView modelAndView = new ModelAndView("auth");
+        modelAndView.addObject("client", client);
+        modelAndView.addObject("callback", callback);
         return modelAndView;
     }
 
     /**
      * 获取access_token
      *
-     * @param grantType
-     * @param appId
-     * @param appKey
-     * @param code
-     * @param refreshToken
+     * @param param
      * @return
      */
     @RequestMapping(value = "/token", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseHelper token(
-            @RequestParam(name = "grant_type") String grantType,
-            @RequestParam(name = "app_id") String appId,
-            @RequestParam(name = "app_key") String appKey,
-            @RequestParam(name = "code", required = false) String code,
-            @RequestParam(name = "refresh_token", required = false) String refreshToken) {
+    public ResponseHelper token(@Valid GetTokenParam param, BindingResult bindingResult) {
         ResponseHelper<Token> result = new ResponseHelper<>();
+        if (bindingResult.hasErrors()) {
+            return result.sendError("请传入合法的参数");
+        }
+        ApplicationContext ac = ApplicationContextUtil.getApplicationContext();
+        TokenHandler tokenHandler = ac.getBean(param.getGrantType(), TokenHandler.class);
         Token token;
         try {
             // 检查客户端合法性
-            Client client = this.tokenService.checkClient(appId, appKey);
-            switch (grantType) {
-                case "authorization_code":
-                    // 检查授权码code的合法性
-                    User user = this.tokenService.checkCode(client.getAppId(), code);
-                    // 授权码合法的话就下发最终的Token
-                    token = this.tokenService.getToken(client, user, OauthSystem.Token.EXPIRE_TIME_SEC);
-                    break;
-                case "refresh_token":
-                    token = this.tokenService.refreshToken(refreshToken, OauthSystem.Token.EXPIRE_TIME_SEC);
-                    break;
-                default:
-                    return result.sendError("无效的grant_type");
-            }
-        } catch (Exception ex) {
-            return result.sendError(ex.getMessage());
+            Client client = this.tokenService.checkClient(param.getAppId(), param.getAppKey());
+            TokenHandlerAdapter adapter = DispatcherAdapter.getAdapter(param.getGrantType());
+            token = adapter.handler(tokenHandler, client, param);
+        } catch (IllegalClientException | InvalidCodeException | GrantTypeException | InvalidTokenException e) {
+            return result.sendError(e.getMessage());
         }
         return result.sendSuccess(token);
     }
