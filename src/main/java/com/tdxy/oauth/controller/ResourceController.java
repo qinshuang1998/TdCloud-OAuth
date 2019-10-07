@@ -59,15 +59,15 @@ public class ResourceController {
     @ResponseBody
     public ResponseHelper getInfo() {
         ResponseHelper<Object> result = new ResponseHelper<>();
-        User user = this.authUserContext.getPrincipal();
+        User user = authUserContext.getPrincipal();
         // token只保留唯一身份标识，具体信息需要入库查询
         switch (user.getRole()) {
             case "student":
-                Student student = this.studentService.getInfo(user.getIdentity());
+                Student student = studentService.getInfo(user.getIdentity());
                 result.sendSuccess(student, "student");
                 break;
             case "teacher":
-                Teacher teacher = this.teacherService.getTeacherByWorknum(user.getIdentity());
+                Teacher teacher = teacherService.getTeacherByWorknum(user.getIdentity());
                 result.sendSuccess(teacher, "teacher");
                 break;
             default:
@@ -81,17 +81,14 @@ public class ResourceController {
     public ResponseHelper getAllScore() {
         ResponseHelper<Object> result = new ResponseHelper<>();
         try {
-            User user = this.authUserContext.getPrincipal();
+            User user = authUserContext.getPrincipal();
             String stuNumber = user.getIdentity();
-            ZFCookie cookie = this.zfService.refreshCookie(stuNumber);
+            ZFCookie cookie = zfService.refreshCookie(stuNumber);
             ZFUtil zfUtil = new ZFUtil(cookie);
             ScoreTable scoreTable = zfUtil.getAllScore(stuNumber);
             return result.sendSuccess(scoreTable);
         } catch (IllegalUserException ex) {
             return result.sendError(ex.getMessage());
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return result.sendError("系统错误");
         }
     }
 
@@ -100,17 +97,14 @@ public class ResourceController {
     public ResponseHelper getScoreByYear(@RequestParam(name = "year") String year) {
         ResponseHelper<Object> result = new ResponseHelper<>();
         try {
-            User user = this.authUserContext.getPrincipal();
+            User user = authUserContext.getPrincipal();
             String stuNumber = user.getIdentity();
-            ZFCookie cookie = this.zfService.refreshCookie(stuNumber);
+            ZFCookie cookie = zfService.refreshCookie(stuNumber);
             ZFUtil zfUtil = new ZFUtil(cookie);
             ScoreTable scoreTable = zfUtil.getScoreByYear(stuNumber, year);
             return result.sendSuccess(scoreTable);
         } catch (IllegalUserException ex) {
             return result.sendError(ex.getMessage());
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return result.sendError("系统错误");
         }
     }
 
@@ -120,17 +114,14 @@ public class ResourceController {
                                          @RequestParam(name = "term") String term) {
         ResponseHelper<Object> result = new ResponseHelper<>();
         try {
-            User user = this.authUserContext.getPrincipal();
+            User user = authUserContext.getPrincipal();
             String stuNumber = user.getIdentity();
-            ZFCookie cookie = this.zfService.refreshCookie(stuNumber);
+            ZFCookie cookie = zfService.refreshCookie(stuNumber);
             ZFUtil zfUtil = new ZFUtil(cookie);
             ScoreTable scoreTable = zfUtil.getScoreByTerm(stuNumber, year, term);
             return result.sendSuccess(scoreTable);
         } catch (IllegalUserException ex) {
             return result.sendError(ex.getMessage());
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return result.sendError("系统错误");
         }
     }
 
@@ -139,17 +130,14 @@ public class ResourceController {
     public ResponseHelper getScoreByTerm() {
         ResponseHelper<Object> result = new ResponseHelper<>();
         try {
-            User user = this.authUserContext.getPrincipal();
+            User user = authUserContext.getPrincipal();
             String stuNumber = user.getIdentity();
-            ZFCookie cookie = this.zfService.refreshCookie(stuNumber);
+            ZFCookie cookie = zfService.refreshCookie(stuNumber);
             ZFUtil zfUtil = new ZFUtil(cookie);
             CourseTable courseTable = zfUtil.getCourse(stuNumber);
             return result.sendSuccess(courseTable);
         } catch (IllegalUserException ex) {
             return result.sendError(ex.getMessage());
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return result.sendError("系统错误");
         }
     }
 
@@ -160,17 +148,14 @@ public class ResourceController {
             @RequestParam(name = "term") String term) {
         ResponseHelper<Object> result = new ResponseHelper<>();
         try {
-            User user = this.authUserContext.getPrincipal();
+            User user = authUserContext.getPrincipal();
             String stuNumber = user.getIdentity();
-            ZFCookie cookie = this.zfService.refreshCookie(stuNumber);
+            ZFCookie cookie = zfService.refreshCookie(stuNumber);
             ZFUtil zfUtil = new ZFUtil(cookie);
             CourseTable courseTable = zfUtil.getCourseByYearAndTerm(stuNumber, year, term);
             return result.sendSuccess(courseTable);
         } catch (IllegalUserException ex) {
             return result.sendError(ex.getMessage());
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return result.sendError("系统错误");
         }
     }
 }

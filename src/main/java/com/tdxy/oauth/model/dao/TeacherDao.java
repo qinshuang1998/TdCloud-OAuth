@@ -11,14 +11,14 @@ public class TeacherDao {
     private TeacherMapper teacherMapper;
 
     public Teacher getTeacherByName(String tchName) {
-        return this.teacherMapper.findAllByName(tchName);
+        return teacherMapper.findAllByName(tchName);
     }
 
     public Teacher getTeacherByWorknum(String tchWorknum) {
-        return this.teacherMapper.findAllByWorknum(tchWorknum);
+        return teacherMapper.findAllByWorknum(tchWorknum);
     }
 
     public Teacher getTeacherByNameAndPwd(String tchName, String tchPwd) {
-        return this.teacherMapper.findAllByNameAndPwd(tchName, tchPwd);
+        return teacherMapper.findAllByNameAndPwd(tchName, tchPwd);
     }
 }

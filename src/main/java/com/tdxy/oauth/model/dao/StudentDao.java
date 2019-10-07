@@ -21,7 +21,7 @@ public class StudentDao {
      * @param student 学生实体
      */
     public void addStudent(Student student) {
-        this.studentMapper.insertOne(student);
+        studentMapper.insertOne(student);
     }
 
     /**
@@ -30,7 +30,7 @@ public class StudentDao {
      * @return 记录条数
      */
     public int hasStudent(String stuNumber) {
-        return this.studentMapper.findLineByStuNumber(stuNumber);
+        return studentMapper.findLineByStuNumber(stuNumber);
     }
 
     /**
@@ -39,7 +39,7 @@ public class StudentDao {
      * @return 姓名
      */
     public String getNameByStuNumber(String stuNumber) {
-        return this.studentMapper.findNameByStuNumber(stuNumber);
+        return studentMapper.findNameByStuNumber(stuNumber);
     }
 
     /**
@@ -47,7 +47,7 @@ public class StudentDao {
      * @param student 学生实体
      */
     public void updateInfo(Student student) {
-        this.studentMapper.updateByStuNumber(student);
+        studentMapper.updateByStuNumber(student);
     }
 
     /**
@@ -56,6 +56,6 @@ public class StudentDao {
      * @return 学生实体
      */
     public Student getStudent(String stuNumber) {
-        return this.studentMapper.findAllByStuNumber(stuNumber);
+        return studentMapper.findAllByStuNumber(stuNumber);
     }
 }

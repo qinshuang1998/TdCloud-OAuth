@@ -28,6 +28,6 @@ public class StudentService {
      * @return 学生实体
      */
     public Student getInfo(String identity) {
-        return this.studentDao.getStudent(identity);
+        return studentDao.getStudent(identity);
     }
 }

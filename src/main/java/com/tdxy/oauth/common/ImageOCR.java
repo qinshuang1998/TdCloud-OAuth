@@ -48,7 +48,7 @@ public class ImageOCR {
         return 0;
     }
 
-    private BufferedImage removeBackgroud(String picFile) throws IOException {
+    private BufferedImage removeBackground(String picFile) throws IOException {
         BufferedImage img = ImageIO.read(new File(picFile));
         img = img.getSubimage(5, 1, img.getWidth() - 5, img.getHeight() - 2);
         img = img.getSubimage(0, 0, 50, img.getHeight());
@@ -84,7 +84,7 @@ public class ImageOCR {
             File[] files = dir.listFiles();
             if (files != null) {
                 for (File file : files) {
-                    map.put(ImageIO.read(file), file.getName().charAt(0) + "");
+                    map.put(ImageIO.read(file), file.getName().substring(0, 1));
                 }
             }
             trainMap = map;
@@ -103,8 +103,8 @@ public class ImageOCR {
             if (Math.abs(bi.getWidth() - width) > 2) {
                 continue;
             }
-            int widthMin = width < bi.getWidth() ? width : bi.getWidth();
-            int heightMin = height < bi.getHeight() ? height : bi.getHeight();
+            int widthMin = Math.min(width, bi.getWidth());
+            int heightMin = Math.min(height, bi.getHeight());
             Label1:
             for (int x = 0; x < widthMin; ++x) {
                 for (int y = 0; y < heightMin; ++y) {
@@ -132,7 +132,7 @@ public class ImageOCR {
     public String getAllOCR(String file) {
         StringBuilder result = new StringBuilder();
         try {
-            BufferedImage img = removeBackgroud(file);
+            BufferedImage img = removeBackground(file);
             List<BufferedImage> listImg = splitImage(img);
             Map<BufferedImage, String> map = loadTrainData();
             for (BufferedImage bi : listImg) {

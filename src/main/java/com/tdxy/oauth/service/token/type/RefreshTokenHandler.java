@@ -17,6 +17,6 @@ public class RefreshTokenHandler implements TokenHandler {
     }
 
     public Token refresh(String refreshToken) throws InvalidTokenException {
-        return this.tokenService.refreshToken(refreshToken, Constant.Token.EXPIRE_TIME_SEC);
+        return tokenService.refreshToken(refreshToken, Constant.Token.EXPIRE_TIME_SEC);
     }
 }

@@ -18,10 +18,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.ContextLoader;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -67,14 +65,14 @@ public class AuthController {
         // 获取Client实体
         Client client = null;
         try {
-            client = this.clientService.getClient(appId);
+            client = clientService.getClient(appId);
         } catch (UnknownClientException e) {
             return new ModelAndView("error");
         }
         // 取得session中的User对象
         User user = (User) request.getSession().getAttribute(Constant.Session.SESSION_KEY);
         // 下发一个临时的授权码code
-        String code = this.clientService.getCode(appId, user);
+        String code = clientService.getCode(appId, user);
         // 构造回调地址
         String callback = client.getRedirectUri() + "?code=" + code + "&state=" + state;
         ModelAndView modelAndView = new ModelAndView("auth");
@@ -101,10 +99,10 @@ public class AuthController {
         Token token;
         try {
             // 检查客户端合法性
-            Client client = this.tokenService.checkClient(param.getAppId(), param.getAppKey());
+            Client client = tokenService.checkClient(param.getAppId(), param.getAppKey());
             TokenHandlerAdapter adapter = DispatcherAdapter.getAdapter(param.getGrantType());
             token = adapter.handler(tokenHandler, client, param);
-        } catch (IllegalClientException | InvalidCodeException | GrantTypeException | InvalidTokenException e) {
+        } catch (IllegalClientException | GrantTypeException | InvalidCodeException | InvalidTokenException e) {
             return result.sendError(e.getMessage());
         }
         return result.sendSuccess(token);

@@ -11,18 +11,18 @@ public class ZFCookieDao {
     private ZFCookieMapper zfCookieMapper;
 
     public void addOne(ZFCookie cookie) {
-        this.zfCookieMapper.insertOne(cookie);
+        zfCookieMapper.insertOne(cookie);
     }
 
     public void updateOne(ZFCookie cookie) {
-        this.zfCookieMapper.updateOne(cookie);
+        zfCookieMapper.updateOne(cookie);
     }
 
     public ZFCookie findByStuNumber(String stuNumber) {
-        return this.zfCookieMapper.selectByStuNumber(stuNumber);
+        return zfCookieMapper.selectByStuNumber(stuNumber);
     }
 
     public ZFCookie findByHash(String cookieHash) {
-        return this.zfCookieMapper.selectByHash(cookieHash);
+        return zfCookieMapper.selectByHash(cookieHash);
     }
 }

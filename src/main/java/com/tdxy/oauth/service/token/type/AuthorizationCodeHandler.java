@@ -22,8 +22,8 @@ public class AuthorizationCodeHandler implements TokenHandler {
 
     public Token authorization(Client client, String code) throws InvalidCodeException {
         // 检查授权码code的合法性
-        User user = this.tokenService.checkCode(client.getAppId(), code);
+        User user = tokenService.checkCode(client.getAppId(), code);
         // 授权码合法的话就下发最终的Token
-        return this.tokenService.getToken(client, user, Constant.Token.EXPIRE_TIME_SEC);
+        return tokenService.getToken(client, user, Constant.Token.EXPIRE_TIME_SEC);
     }
 }

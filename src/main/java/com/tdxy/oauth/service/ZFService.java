@@ -23,6 +23,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 正方教务服务层
@@ -67,18 +68,17 @@ public class ZFService {
      *
      * @param httpUtil 传递同一个HttpUtil，保证cookie一致
      * @return 字符串
-     * @throws Exception 异常
      */
     private String getCode(HttpUtil httpUtil) {
-        String imgSrc = this.url + "/CheckCode.aspx";
-        String saveSrc = this.srcPath + System.currentTimeMillis() + ".gif";
+        String imgSrc = url + "/CheckCode.aspx";
+        String saveSrc = srcPath + System.currentTimeMillis() + ".gif";
         try {
             FileOutputStream imgSave = new FileOutputStream(saveSrc);
             imgSave.write(httpUtil.doGet(imgSrc, null));
             imgSave.flush();
             imgSave.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.warn("Fail to download ZF verify code, save to [{}]", saveSrc);
         }
         return saveSrc;
     }
@@ -89,10 +89,9 @@ public class ZFService {
      * @param stuNumber 学号
      * @param stuPwd    密码
      * @return boolean
-     * @throws Exception 异常
      */
     public boolean doLogin(String stuNumber, String stuPwd) {
-        int cookieStatus = checkCookie(getCookieByStuNmuber(stuNumber));
+        int cookieStatus = checkCookie(getCookieByStuNumber(stuNumber));
         HttpUtil httpUtil = new HttpUtil();
         int statusCode;
         String code = "";
@@ -100,7 +99,7 @@ public class ZFService {
         // 为提高成功率，这里尝试了三次，事不过三，不宜过多
         for (int count = 0; count < Constant.ZhengFang.TRY_LOGIN_TIMES; ++count) {
             // 自动识别验证码
-            code = this.imageOcr.getAllOCR(getCode(httpUtil));
+            code = imageOcr.getAllOCR(getCode(httpUtil));
             loginForm = getForm(stuNumber, stuPwd, code);
             statusCode = (int) httpUtil.doPost(this.url, loginForm, null).get("statusCode");
             if (statusCode == Constant.HttpStatus.REDIRECT) {
@@ -130,8 +129,7 @@ public class ZFService {
         }
         ZFUtil zfUtil = new ZFUtil(cookie);
         String stuNumber = cookie.getStuNumber();
-        Student student = null;
-        student = zfUtil.getInfo(stuNumber);
+        Student student = zfUtil.getInfo(stuNumber);
         return stuNumber.equals(student.getStuNumber()) ?
                 Constant.ZhengFang.COOKIE_VALID : Constant.ZhengFang.COOKIE_INVALID;
     }
@@ -139,34 +137,34 @@ public class ZFService {
     private void storeCookie(ZFCookie cookie, int cookieStatus) {
         switch (cookieStatus) {
             case Constant.ZhengFang.COOKIE_NOT_EXIST:
-                this.zfCookieDao.addOne(cookie);
+                zfCookieDao.addOne(cookie);
                 break;
             case Constant.ZhengFang.COOKIE_INVALID:
-                this.zfCookieDao.updateOne(cookie);
+                zfCookieDao.updateOne(cookie);
                 break;
             default:
                 break;
         }
     }
 
-    public ZFCookie getCookieByStuNmuber(String stuNumber) {
-        return this.zfCookieDao.findByStuNumber(stuNumber);
+    public ZFCookie getCookieByStuNumber(String stuNumber) {
+        return zfCookieDao.findByStuNumber(stuNumber);
     }
 
     public ZFCookie getCookieByHash(String cookieHash) {
-        return this.zfCookieDao.findByHash(cookieHash);
+        return zfCookieDao.findByHash(cookieHash);
     }
 
-    public ZFCookie refreshCookie(String stuNumber) throws IllegalUserException, IOException {
-        Student student = this.studentDao.getStudent(stuNumber);
-        if (student != null) {
+    public ZFCookie refreshCookie(String stuNumber) throws IllegalUserException {
+        Student student = studentDao.getStudent(stuNumber);
+        if (Objects.nonNull(student)) {
             String key = Md5Crypt.apr1Crypt(
                     student.getStuNumber() + student.getStuName(), Constant.Security.MD5_SALT_RC4);
             doLogin(student.getStuNumber(), Rc4Encrypt.decrypt(student.getStuPwd(), key));
         } else {
             throw new IllegalUserException("未找到相应的学生信息");
         }
-        return getCookieByStuNmuber(stuNumber);
+        return getCookieByStuNumber(stuNumber);
     }
 
     /**
@@ -176,7 +174,6 @@ public class ZFService {
      * @param stuPwd    密码
      * @param code      验证码
      * @return Map
-     * @throws UnsupportedEncodingException 异常
      */
     private Map<String, String> getForm(String stuNumber, String stuPwd, String code) {
         Map<String, String> loginForm = new HashMap<>(8);
@@ -204,11 +201,11 @@ public class ZFService {
     private void storeStudent(Student student) {
         String stuName = student.getStuNumber();
         // 首先判断数据库里有没有当前学号，没有的话直接INSERT
-        if (this.studentDao.hasStudent(stuName) == 0) {
-            this.studentDao.addStudent(student);
+        if (studentDao.hasStudent(stuName) == 0) {
+            studentDao.addStudent(student);
             // 如果有学号记录，就再比对下是否一致，更新下数据
-        } else if (!this.studentDao.getStudent(stuName).equals(student)) {
-            this.studentDao.updateInfo(student);
+        } else if (!studentDao.getStudent(stuName).equals(student)) {
+            studentDao.updateInfo(student);
         }
     }
 }

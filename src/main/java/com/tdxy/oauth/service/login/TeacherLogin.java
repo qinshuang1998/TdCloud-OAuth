@@ -7,6 +7,8 @@ import com.tdxy.oauth.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service("teacher")
 public class TeacherLogin implements LoginStrategy {
     private final TeacherService teacherService;
@@ -18,8 +20,8 @@ public class TeacherLogin implements LoginStrategy {
 
     @Override
     public LoginResult login(String username, String password, String role) {
-        Teacher teacher = this.teacherService.doLogin(username, password);
-        boolean result = teacher == null;
+        Teacher teacher = teacherService.doLogin(username, password);
+        boolean result = Objects.nonNull(teacher);
         User user = result ? new User(role, teacher.getTchWorknum()) : null;
         return new LoginResult(result, user);
     }

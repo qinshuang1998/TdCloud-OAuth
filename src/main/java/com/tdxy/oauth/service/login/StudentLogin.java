@@ -23,9 +23,9 @@ public class StudentLogin implements LoginStrategy {
         String hash = Md5Crypt.apr1Crypt(
                 username + Md5Crypt.apr1Crypt(password, Constant.Security.MD5_SALT_STU_PWD),
                 Constant.Security.MD5_SALT_CACHE);
-        ZFCookie cookie = this.zfService.getCookieByHash(hash);
-        int cookieStatus = this.zfService.checkCookie(cookie);
-        boolean result = (cookieStatus == 1) || this.zfService.doLogin(username, password);
+        ZFCookie cookie = zfService.getCookieByHash(hash);
+        int cookieStatus = zfService.checkCookie(cookie);
+        boolean result = (cookieStatus == 1) || zfService.doLogin(username, password);
         User user = result ? new User(role, username) : null;
         return new LoginResult(result, user);
     }

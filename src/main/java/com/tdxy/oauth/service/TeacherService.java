@@ -18,14 +18,14 @@ public class TeacherService {
 
     public Teacher doLogin(String tchName, String tchPwd) {
         String hashPwd = Md5Crypt.apr1Crypt(tchPwd, Constant.Security.MD5_SALT_TCH_PWD);
-        return this.teacherDao.getTeacherByNameAndPwd(tchName, hashPwd);
+        return teacherDao.getTeacherByNameAndPwd(tchName, hashPwd);
     }
 
     public Teacher getTeacherByName(String tchName) {
-        return this.teacherDao.getTeacherByName(tchName);
+        return teacherDao.getTeacherByName(tchName);
     }
 
     public Teacher getTeacherByWorknum(String tchWorknum) {
-        return this.teacherDao.getTeacherByWorknum(tchWorknum);
+        return teacherDao.getTeacherByWorknum(tchWorknum);
     }
 }

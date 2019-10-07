@@ -14,6 +14,8 @@ import com.tdxy.oauth.model.dao.RefreshTokenDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.MessageFormat;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -52,21 +54,19 @@ public class TokenService {
      */
     public Token getToken(Client client, User user, long time) {
         String accessToken, refreshToken;
-        RefreshToken oldRefreshToken = this.refreshTokenDao.findByAppIdAndUser(client.getAppId(), user.getIdentity());
+        RefreshToken oldRefreshToken = refreshTokenDao.findByAppIdAndUser(client.getAppId(), user.getIdentity());
         // 生成随机的access_token
         accessToken = UUID.randomUUID().toString();
-        this.redisUtil.set(accessToken, user, time);
-        if (oldRefreshToken == null) {
+        redisUtil.set(accessToken, user, time);
+        if (Objects.isNull(oldRefreshToken)) {
             refreshToken = UUID.randomUUID().toString();
             RefreshToken newRefreshToken = new RefreshToken(refreshToken,
                     accessToken, client.getAppId(), user.getIdentity(), user.getRole());
-            this.refreshTokenDao.addOne(newRefreshToken);
+            refreshTokenDao.addOne(newRefreshToken);
         } else {
             refreshToken = oldRefreshToken.getRefreshToken();
-            if (this.redisUtil.hasKey(oldRefreshToken.getTokenId())) {
-                this.redisUtil.del(oldRefreshToken.getTokenId());
-            }
-            this.refreshTokenDao.updateByTokenId(accessToken, refreshToken);
+            redisUtil.del(oldRefreshToken.getTokenId());
+            refreshTokenDao.updateByTokenId(accessToken, refreshToken);
         }
         // 构造Token实体
         return new Token(accessToken, Constant.Token.TYPE, time, refreshToken, Constant.Token.SCOPE);
@@ -74,19 +74,16 @@ public class TokenService {
 
     public Token refreshToken(String refreshToken, long time) throws InvalidTokenException {
         RefreshToken refresh = (refreshToken != null) ?
-                this.refreshTokenDao.findTokenByRefreshToken(refreshToken) : null;
-        String accessToken;
-        if (refresh != null) {
-            if (this.redisUtil.hasKey(refresh.getTokenId())) {
-                this.redisUtil.del(refresh.getTokenId());
-            }
-            User user = new User(refresh.getUserRole(), refresh.getUserIdentity());
-            accessToken = UUID.randomUUID().toString();
-            this.redisUtil.set(accessToken, user, time);
-            this.refreshTokenDao.updateByTokenId(accessToken, refreshToken);
-        } else {
+                refreshTokenDao.findTokenByRefreshToken(refreshToken) : null;
+        if (Objects.isNull(refresh)) {
             throw new InvalidTokenException("无效的refresh_token");
         }
+
+        redisUtil.del(refresh.getTokenId());
+        User user = new User(refresh.getUserRole(), refresh.getUserIdentity());
+        String accessToken = UUID.randomUUID().toString();
+        redisUtil.set(accessToken, user, time);
+        refreshTokenDao.updateByTokenId(accessToken, refreshToken);
         return new Token(accessToken, Constant.Token.TYPE, time, refreshToken, Constant.Token.SCOPE);
     }
 
@@ -99,19 +96,18 @@ public class TokenService {
      * @throws InvalidCodeException code异常
      */
     public User checkCode(String appId, String code) throws InvalidCodeException {
-        if (code == null || !this.redisUtil.hasKey(code)) {
+        User user = (User) redisUtil.get(code);
+        if (code == null || Objects.isNull(user)) {
             throw new InvalidCodeException("无效的授权码");
         }
-        User user = (User) this.redisUtil.get(code);
         String prefix = Constant.Code.PREFIX + appId + "_" + user.getIdentity();
-        this.redisUtil.del(prefix);
-        this.redisUtil.del(code);
+        redisUtil.del(prefix, code);
         return user;
     }
 
     public Client checkClient(String appId, String appKey) throws IllegalClientException {
         // 依据密钥key来判断是否合法
-        Client client = this.clientDao.checkByAppKey(appId, appKey);
+        Client client = clientDao.checkByAppKey(appId, appKey);
         if (client == null) {
             throw new IllegalClientException("非法客户端的请求");
         }
@@ -126,8 +122,9 @@ public class TokenService {
      * @throws InvalidTokenException 异常
      */
     public User getUserByToken(String accessToken) throws InvalidTokenException {
-        if (this.redisUtil.hasKey(accessToken)) {
-            return (User) this.redisUtil.get(accessToken);
+        User user = (User) redisUtil.get(accessToken);
+        if (Objects.nonNull(user)) {
+            return user;
         } else {
             throw new InvalidTokenException("无效的access_token");
         }

@@ -6,7 +6,7 @@ package com.tdxy.oauth.common;
  * @author Qug_
  */
 public class RandomStringUtil {
-    public String getNonceStr() {
+    public static String getNonceStr() {
         String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         StringBuilder str = new StringBuilder();
         int rand;
@@ -18,7 +18,7 @@ public class RandomStringUtil {
         return str.toString();
     }
 
-    public String getNonceStr(int length) {
+    public static String getNonceStr(int length) {
         String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         StringBuilder str = new StringBuilder();
         int rand;

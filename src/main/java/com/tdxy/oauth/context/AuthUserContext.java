@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @Component
 public class AuthUserContext implements Serializable {
-    private static final long serialVersionUID = -5803208351122804211L;
+    private static final long serialVersionUID = 1L;
     private static final ThreadLocal<User> PRINCIPAL = new ThreadLocal<>();
 
     public User getPrincipal() {

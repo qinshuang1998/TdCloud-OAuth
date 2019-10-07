@@ -11,18 +11,18 @@ public class RefreshTokenDao {
     private RefreshTokenMapper refreshTokenMapper;
 
     public RefreshToken findByAppIdAndUser(String appId, String userIdentity) {
-        return this.refreshTokenMapper.findByAppIdAndUser(appId, userIdentity);
+        return refreshTokenMapper.findByAppIdAndUser(appId, userIdentity);
     }
 
     public void addOne(RefreshToken refreshToken) {
-        this.refreshTokenMapper.addOne(refreshToken);
+        refreshTokenMapper.addOne(refreshToken);
     }
 
     public void updateByTokenId(String tokenId, String refreshToken) {
-        this.refreshTokenMapper.updateByTokenId(tokenId, refreshToken);
+        refreshTokenMapper.updateByTokenId(tokenId, refreshToken);
     }
 
     public RefreshToken findTokenByRefreshToken(String refreshToken) {
-        return this.refreshTokenMapper.findTokenByRefreshToken(refreshToken);
+        return refreshTokenMapper.findTokenByRefreshToken(refreshToken);
     }
 }

@@ -7,8 +7,13 @@ import com.tdxy.oauth.exception.UnknownClientException;
 import com.tdxy.oauth.model.po.Client;
 import com.tdxy.oauth.model.bo.User;
 import com.tdxy.oauth.model.dao.ClientDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * 客户端服务
@@ -17,6 +22,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ClientService {
+    private final static Logger logger = LoggerFactory.getLogger(ClientService.class);
     /**
      * 客户端DAO层
      */
@@ -56,15 +62,18 @@ public class ClientService {
      * @return 10位字符串
      */
     public String getCode(String appId, User user) {
-        RandomStringUtil utils = new RandomStringUtil();
         String prefix = Constant.Code.PREFIX + appId + "_" + user.getIdentity();
-        String code = null;
-        if (this.redisUtil.hasKey(prefix)) {
-            code = (String) this.redisUtil.get(prefix);
-        } else {
-            code = utils.getNonceStr();
-            this.redisUtil.set(prefix, code, Constant.Code.EXPIRE_TIME_SEC);
-            this.redisUtil.set(code, user, Constant.Code.EXPIRE_TIME_SEC);
+        String code = (String) redisUtil.get(prefix);
+        if (Objects.nonNull(code)) {
+            return code;
+        }
+        code = RandomStringUtil.getNonceStr();
+        HashMap<String, Object> data = new HashMap<>(4);
+        data.put(prefix, code);
+        data.put(code, user);
+        Boolean success = redisUtil.set(data, Constant.Code.EXPIRE_TIME_SEC);
+        if (!success) {
+            logger.warn("Get code failure, [{} -> {}, {} -> {}]", prefix, code, code, user);
         }
         return code;
     }
