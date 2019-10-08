@@ -1,6 +1,7 @@
 package com.tdxy.oauth.service.user.factory;
 
 import com.tdxy.oauth.common.ApplicationContextUtil;
+import com.tdxy.oauth.service.user.RejectedStrategy;
 import com.tdxy.oauth.service.user.UserStrategy;
 import org.springframework.context.ApplicationContext;
 
@@ -12,9 +13,14 @@ public class UserStrategyFactory {
 
     public static UserStrategy getStrategy(String role) {
         if (Objects.isNull(UserStrategy)) {
-            ApplicationContext ac = ApplicationContextUtil.getApplicationContext();
-            UserStrategy = ac.getBeansOfType(UserStrategy.class);
+            synchronized (UserStrategyFactory.class) {
+                if (Objects.isNull(UserStrategy)) {
+                    ApplicationContext ac = ApplicationContextUtil.getApplicationContext();
+                    UserStrategy = ac.getBeansOfType(UserStrategy.class);
+                }
+            }
         }
-        return UserStrategy.get(role);
+        UserStrategy strategy = UserStrategy.get(role);
+        return Objects.nonNull(strategy) ? strategy : RejectedStrategy.Singleton.INSTANCE;
     }
 }
