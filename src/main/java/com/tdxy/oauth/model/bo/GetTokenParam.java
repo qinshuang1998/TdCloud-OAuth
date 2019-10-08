@@ -4,36 +4,36 @@ import javax.validation.constraints.NotBlank;
 
 public class GetTokenParam {
     @NotBlank
-    private String grantType;
+    private String grant_type;
     @NotBlank
-    private String appId;
+    private String app_id;
     @NotBlank
-    private String appKey;
+    private String app_key;
     private String code;
-    private String refreshToken;
+    private String refresh_token;
 
-    public String getGrantType() {
-        return grantType;
+    public String getGrant_type() {
+        return grant_type;
     }
 
-    public void setGrantType(String grantType) {
-        this.grantType = grantType;
+    public void setGrant_type(String grant_type) {
+        this.grant_type = grant_type;
     }
 
-    public String getAppId() {
-        return appId;
+    public String getApp_id() {
+        return app_id;
     }
 
-    public void setAppId(String appId) {
-        this.appId = appId;
+    public void setApp_id(String app_id) {
+        this.app_id = app_id;
     }
 
-    public String getAppKey() {
-        return appKey;
+    public String getApp_key() {
+        return app_key;
     }
 
-    public void setAppKey(String appKey) {
-        this.appKey = appKey;
+    public void setApp_key(String app_key) {
+        this.app_key = app_key;
     }
 
     public String getCode() {
@@ -44,11 +44,11 @@ public class GetTokenParam {
         this.code = code;
     }
 
-    public String getRefreshToken() {
-        return refreshToken;
+    public String getRefresh_token() {
+        return refresh_token;
     }
 
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
+    public void setRefresh_token(String refresh_token) {
+        this.refresh_token = refresh_token;
     }
 }

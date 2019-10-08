@@ -28,7 +28,7 @@ public class ImageOCR {
     private final static Logger logger = LoggerFactory.getLogger(ImageOCR.class);
     private Map<BufferedImage, String> trainMap = null;
 
-    @Value("${trainPath}")
+    @Value("${zf.trainPath}")
     private String trainPath;
 
     private int isBlue(int colorInt) {

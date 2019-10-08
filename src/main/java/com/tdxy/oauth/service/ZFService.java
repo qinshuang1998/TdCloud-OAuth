@@ -55,7 +55,7 @@ public class ZFService {
     /**
      * 自动注入配置的路径，用来存下载的验证码图片
      */
-    @Value("${srcPath}")
+    @Value("${zf.srcPath}")
     private String srcPath;
 
     /**

@@ -25,12 +25,12 @@ public class ApiEndPointInterceptor implements HandlerInterceptor {
         if (this.authUserContext.isAuthenticated()) {
             return true;
         }
-        PrintWriter writer = null;
+        PrintWriter writer;
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(Constant.HttpStatus.UNAUTHORIZED);
         ResponseHelper result = new ResponseHelper();
-        String error = JSONObject.toJSONString(result.sendError("无效的access_token"));
+        String error = JSONObject.toJSONString(result.sendError("未提供access_token或验证失败"));
         try {
             writer = response.getWriter();
             writer.print(error);

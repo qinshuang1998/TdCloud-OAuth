@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class RefreshTokenHandlerAdapter implements TokenHandlerAdapter {
     @Override
     public Token handler(TokenHandler tokenHandler, Client client, GetTokenParam param) throws InvalidTokenException {
-        return ((RefreshTokenHandler) tokenHandler).refresh(param.getRefreshToken());
+        return ((RefreshTokenHandler) tokenHandler).refresh(param.getRefresh_token());
     }
 
     @Override

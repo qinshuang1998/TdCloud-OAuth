@@ -14,7 +14,7 @@ public class ResponseHelper<T> {
     private Boolean result;
 
     @JSONField(ordinal = 2)
-    private Integer code = Constant.HttpStatus.UNDEFINE;
+    private Integer code = Constant.HttpStatus.UNDEFINED;
 
     @JSONField(ordinal = 3)
     private String msg = "";

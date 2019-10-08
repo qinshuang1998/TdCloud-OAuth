@@ -28,7 +28,7 @@ public class ApiHeaderInterceptor implements HandlerInterceptor {
         }
         if (request.getHeader(Constant.Token.HEADER) != null) {
             String token = request.getHeader(Constant.Token.HEADER).substring(Constant.Token.HEAD.length());
-            User user = null;
+            User user;
             try {
                 user = this.tokenService.getUserByToken(token);
                 this.authUserContext.setPrincipal(user);

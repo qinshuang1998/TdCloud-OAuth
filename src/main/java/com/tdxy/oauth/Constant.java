@@ -1,17 +1,19 @@
 package com.tdxy.oauth;
 
+import com.tdxy.oauth.common.PropertyFactory;
+
 public final class Constant {
     public interface HttpStatus {
         int SUCCESS = 200;
         int ERROR = 500;
         int REDIRECT = 302;
         int UNAUTHORIZED = 401;
-        int UNDEFINE = -1;
+        int UNDEFINED = -1;
     }
 
     public interface ZhengFang {
-        String URL = "http://jwxt.nytdc.edu.cn";
-        String DOMAIN = "jwxt.nytdc.edu.cn";
+        String URL = PropertyFactory.getProperties().getProperty("zf.url", "http://jwxt.nytdc.edu.cn");
+        String DOMAIN = PropertyFactory.getProperties().getProperty("zf.domain", "jwxt.nytdc.edu.cn");
         int COOKIE_VALID = 1;
         int COOKIE_INVALID = 0;
         int COOKIE_NOT_EXIST = -1;

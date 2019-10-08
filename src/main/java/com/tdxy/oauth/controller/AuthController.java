@@ -63,7 +63,7 @@ public class AuthController {
             @RequestParam(name = "state", required = false) String state,
             HttpServletRequest request) {
         // 获取Client实体
-        Client client = null;
+        Client client;
         try {
             client = clientService.getClient(appId);
         } catch (UnknownClientException e) {
@@ -84,23 +84,25 @@ public class AuthController {
     /**
      * 获取access_token
      *
-     * @param param
-     * @return
+     * @param param         请求参数POJO
+     * @param bindingResult 参数合法验证
+     * @return json
      */
     @RequestMapping(value = "/token", method = RequestMethod.GET)
     @ResponseBody
     public ResponseHelper token(@Valid GetTokenParam param, BindingResult bindingResult) {
         ResponseHelper<Token> result = new ResponseHelper<>();
         if (bindingResult.hasErrors()) {
+            System.out.println(bindingResult.getFieldError());
             return result.sendError("请传入合法的参数");
         }
         ApplicationContext ac = ApplicationContextUtil.getApplicationContext();
-        TokenHandler tokenHandler = ac.getBean(param.getGrantType(), TokenHandler.class);
+        TokenHandler tokenHandler = ac.getBean(param.getGrant_type(), TokenHandler.class);
         Token token;
         try {
             // 检查客户端合法性
-            Client client = tokenService.checkClient(param.getAppId(), param.getAppKey());
-            TokenHandlerAdapter adapter = DispatcherAdapter.getAdapter(param.getGrantType());
+            Client client = tokenService.checkClient(param.getApp_id(), param.getApp_key());
+            TokenHandlerAdapter adapter = DispatcherAdapter.getAdapter(param.getGrant_type());
             token = adapter.handler(tokenHandler, client, param);
         } catch (IllegalClientException | GrantTypeException | InvalidCodeException | InvalidTokenException e) {
             return result.sendError(e.getMessage());
