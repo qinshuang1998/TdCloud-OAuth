@@ -8,19 +8,16 @@ import com.tdxy.oauth.model.bo.CourseTable;
 import com.tdxy.oauth.model.bo.ScoreTable;
 import com.tdxy.oauth.model.bo.User;
 import com.tdxy.oauth.model.bo.ZFCookie;
-import com.tdxy.oauth.model.po.Student;
-import com.tdxy.oauth.model.po.Teacher;
-import com.tdxy.oauth.service.StudentService;
-import com.tdxy.oauth.service.TeacherService;
+import com.tdxy.oauth.model.po.Member;
 import com.tdxy.oauth.service.ZFService;
+import com.tdxy.oauth.service.user.UserStrategy;
+import com.tdxy.oauth.service.user.factory.UserStrategyFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.io.IOException;
 
 /**
  * 资源控制器
@@ -30,22 +27,13 @@ import java.io.IOException;
 @Controller
 @RequestMapping("/api")
 public class ResourceController {
-    /**
-     * 学生用户的一些操作
-     */
-    private final StudentService studentService;
-
-    private final TeacherService teacherService;
 
     private final ZFService zfService;
 
     private final AuthUserContext authUserContext;
 
     @Autowired
-    public ResourceController(StudentService studentService,
-                              TeacherService teacherService, ZFService zfService, AuthUserContext authUserContext) {
-        this.studentService = studentService;
-        this.teacherService = teacherService;
+    public ResourceController(ZFService zfService, AuthUserContext authUserContext) {
         this.zfService = zfService;
         this.authUserContext = authUserContext;
     }
@@ -58,22 +46,12 @@ public class ResourceController {
     @RequestMapping(value = "/getInfo", method = RequestMethod.GET)
     @ResponseBody
     public ResponseHelper getInfo() {
-        ResponseHelper<Object> result = new ResponseHelper<>();
+        ResponseHelper<Member> result = new ResponseHelper<>();
         User user = authUserContext.getPrincipal();
         // token只保留唯一身份标识，具体信息需要入库查询
-        switch (user.getRole()) {
-            case "student":
-                Student student = studentService.getInfo(user.getIdentity());
-                result.sendSuccess(student, "student");
-                break;
-            case "teacher":
-                Teacher teacher = teacherService.getTeacherByWorknum(user.getIdentity());
-                result.sendSuccess(teacher, "teacher");
-                break;
-            default:
-                break;
-        }
-        return result;
+        UserStrategy userStrategy = UserStrategyFactory.getStrategy(user.getRole());
+        Member member = userStrategy.getInfo(user.getIdentity());
+        return result.sendSuccess(member, user.getRole());
     }
 
     @RequestMapping(value = "/getAllScore", method = RequestMethod.GET)

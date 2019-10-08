@@ -2,7 +2,7 @@ package com.tdxy.oauth.model.po;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-public class Teacher {
+public class Teacher implements Member {
     @JSONField(serialize = false)
     private Integer tchId;
     @JSONField(ordinal = 1)

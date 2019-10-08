@@ -4,7 +4,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 
 import java.util.Objects;
 
-public class Student {
+public class Student implements Member {
     @JSONField(ordinal = 1)
     private String stuNumber;
     @JSONField(ordinal = 2)

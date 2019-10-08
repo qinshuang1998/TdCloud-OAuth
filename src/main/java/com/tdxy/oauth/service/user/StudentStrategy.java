@@ -1,20 +1,25 @@
-package com.tdxy.oauth.service.login;
+package com.tdxy.oauth.service.user;
 
 import com.tdxy.oauth.Constant;
 import com.tdxy.oauth.model.bo.LoginResult;
 import com.tdxy.oauth.model.bo.User;
 import com.tdxy.oauth.model.bo.ZFCookie;
+import com.tdxy.oauth.model.po.Member;
+import com.tdxy.oauth.service.StudentService;
 import com.tdxy.oauth.service.ZFService;
 import org.apache.commons.codec.digest.Md5Crypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service("student")
-public class StudentLogin implements LoginStrategy {
+public class StudentStrategy implements UserStrategy {
     private final ZFService zfService;
 
+    private final StudentService studentService;
+
     @Autowired
-    public StudentLogin(ZFService zfService) {
+    public StudentStrategy(StudentService studentService, ZFService zfService) {
+        this.studentService = studentService;
         this.zfService = zfService;
     }
 
@@ -28,5 +33,10 @@ public class StudentLogin implements LoginStrategy {
         boolean result = (cookieStatus == 1) || zfService.doLogin(username, password);
         User user = result ? new User(role, username) : null;
         return new LoginResult(result, user);
+    }
+
+    @Override
+    public Member getInfo(String identity) {
+        return studentService.getInfo(identity);
     }
 }

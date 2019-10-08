@@ -2,9 +2,9 @@ package com.tdxy.oauth.controller;
 
 import com.tdxy.oauth.Constant;
 import com.tdxy.oauth.common.ResponseHelper;
-import com.tdxy.oauth.service.login.factory.LoginStrategyFactory;
+import com.tdxy.oauth.service.user.factory.UserStrategyFactory;
 import com.tdxy.oauth.model.bo.LoginResult;
-import com.tdxy.oauth.service.login.LoginStrategy;
+import com.tdxy.oauth.service.user.UserStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -55,9 +55,9 @@ public class LoginController {
                                   @RequestParam(name = "role") String role,
                                   HttpServletRequest request) {
         ResponseHelper<String> result = new ResponseHelper<>();
-        // 登录策略
-        LoginStrategy loginStrategy = LoginStrategyFactory.getStrategy(role);
-        LoginResult loginResult = loginStrategy.login(username, password, role);
+        // 用户策略
+        UserStrategy userStrategy = UserStrategyFactory.getStrategy(role);
+        LoginResult loginResult = userStrategy.login(username, password, role);
         if (loginResult.isSuccess()) {
             request.getSession().setAttribute(Constant.Session.SESSION_KEY, loginResult.getUser());
             return result.sendSuccess();
