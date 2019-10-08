@@ -1,4 +1,4 @@
-package com.tdxy.oauth.service.user;
+package com.tdxy.oauth.service.strategy;
 
 import com.tdxy.oauth.model.bo.LoginResult;
 import com.tdxy.oauth.model.po.Member;

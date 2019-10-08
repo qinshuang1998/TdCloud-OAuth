@@ -2,9 +2,9 @@ package com.tdxy.oauth.controller;
 
 import com.tdxy.oauth.Constant;
 import com.tdxy.oauth.common.ResponseHelper;
-import com.tdxy.oauth.service.user.factory.UserStrategyFactory;
+import com.tdxy.oauth.service.strategy.factory.UserStrategyFactory;
 import com.tdxy.oauth.model.bo.LoginResult;
-import com.tdxy.oauth.service.user.UserStrategy;
+import com.tdxy.oauth.service.strategy.UserStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Configuration;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
-@SuppressWarnings("unchecked")
 @Configuration
 public class DruidConfig {
 
@@ -70,7 +69,7 @@ public class DruidConfig {
 
     @Bean
     public ServletRegistrationBean druidServlet() {
-        ServletRegistrationBean reg = new ServletRegistrationBean();
+        ServletRegistrationBean<StatViewServlet> reg = new ServletRegistrationBean<>();
         reg.setServlet(new StatViewServlet());
         reg.addUrlMappings("/druid/*");
         reg.addInitParameter("loginUsername", username);
@@ -81,7 +80,7 @@ public class DruidConfig {
 
     @Bean
     public FilterRegistrationBean filterRegistrationBean() {
-        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+        FilterRegistrationBean<WebStatFilter> filterRegistrationBean = new FilterRegistrationBean<>();
         filterRegistrationBean.setFilter(new WebStatFilter());
         filterRegistrationBean.addUrlPatterns("/*");
         filterRegistrationBean.addInitParameter("exclusions", "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*");

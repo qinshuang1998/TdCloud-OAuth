@@ -1,8 +1,8 @@
-package com.tdxy.oauth.service.user.factory;
+package com.tdxy.oauth.service.strategy.factory;
 
 import com.tdxy.oauth.common.ApplicationContextUtil;
-import com.tdxy.oauth.service.user.RejectedStrategy;
-import com.tdxy.oauth.service.user.UserStrategy;
+import com.tdxy.oauth.service.strategy.RejectedStrategy;
+import com.tdxy.oauth.service.strategy.UserStrategy;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Map;

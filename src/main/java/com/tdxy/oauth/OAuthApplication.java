@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.context.request.RequestContextListener;
 
 import java.util.ArrayList;
@@ -39,7 +38,7 @@ public class OAuthApplication {
         // 4.将converter赋值给HttpMessageConverter
         // HttpMessageConverter<?> converter = fastConverter;
         // 5.返回HttpMessageConverters对象
-        return new HttpMessageConverters((HttpMessageConverter<?>) fastConverter);
+        return new HttpMessageConverters(fastConverter);
     }
 
     public static void main(String[] args) {
