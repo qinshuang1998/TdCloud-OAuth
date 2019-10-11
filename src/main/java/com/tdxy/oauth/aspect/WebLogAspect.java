@@ -40,18 +40,18 @@ public class WebLogAspect {
         if (attributes != null) {
             HttpServletRequest request = attributes.getRequest();
             // 记录下请求内容
-            SimpleDateFormat time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            logger.info("==========" + time.format(new Date()) + "==========");
-            logger.info("URL : " + request.getRequestURL().toString());
-            logger.info("IP : " + request.getRemoteAddr());
-            logger.info("CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
-            // logger.info("ARGS : " + Arrays.toString(joinPoint.getArgs()));
+//            SimpleDateFormat time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//            logger.info("==========" + time.format(new Date()) + "==========");
+//            logger.info("URL : " + request.getRequestURL().toString());
+//            logger.info("IP : " + request.getRemoteAddr());
+//            logger.info("CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
+//             logger.info("ARGS : " + Arrays.toString(joinPoint.getArgs()));
         }
     }
 
     @AfterReturning("webLog()")
     public void doAfterReturning() {
-        logger.info("SPEND TIME : " + (System.currentTimeMillis() - startTime.get()) + " ms");
+//        logger.info("SPEND TIME : " + (System.currentTimeMillis() - startTime.get()) + " ms");
         startTime.remove();
     }
 }
