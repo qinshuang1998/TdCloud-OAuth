@@ -5,6 +5,8 @@
 ![](https://img.shields.io/github/license/qinshuang1998/TdCloud-OAuth)
 ![](https://img.shields.io/github/v/release/qinshuang1998/TdCloud-OAuth)
 
+[开发者文档请移步 ✈](https://github.com/qinshuang1998/TdCloud-OAuth/wiki)
+
 ### 1.快速部署
 
 **1）docker（待补充）**
