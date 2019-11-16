@@ -12,6 +12,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
@@ -42,12 +43,11 @@ public class ZFUtil {
      * 获取学生个人信息
      *
      * @param stuNumber 当前登录学号
-     * @return Studeng实体
-     * @throws Exception 异常
+     * @return Student实体
      */
     public Student getInfo(String stuNumber) {
         String sUrl = this.url + "/xsgrxx.aspx?xh=" + stuNumber;
-        String getContent = null;
+        String getContent = "";
         try {
             getContent = new String(this.httpUtil.doGet(sUrl, this.header), "GBK");
         } catch (UnsupportedEncodingException e) {
@@ -69,7 +69,7 @@ public class ZFUtil {
 
     public CourseTable getCourse(String stuNumber) {
         String sUrl = this.url + "/xskbcx.aspx?xh=" + stuNumber;
-        String getContent = null;
+        String getContent = "";
         try {
             getContent = new String(this.httpUtil.doGet(sUrl, this.header), "GBK");
         } catch (UnsupportedEncodingException e) {
@@ -113,7 +113,7 @@ public class ZFUtil {
         String html = (String) this.httpUtil
                 .doPost(sUrl, postData, this.header).get("content");
         Document doc = Jsoup.parse(html);
-        ScoreTable scoreTable = new ScoreTable("全部成绩", "undefine", "undefine");
+        ScoreTable scoreTable = new ScoreTable("全部成绩", "undefined", "undefined");
         return buildScoreTable(doc, scoreTable);
     }
 
@@ -133,7 +133,7 @@ public class ZFUtil {
         String html = (String) this.httpUtil
                 .doPost(sUrl, postData, this.header).get("content");
         Document doc = Jsoup.parse(html);
-        ScoreTable scoreTable = new ScoreTable("按学年查询", year, "undefine");
+        ScoreTable scoreTable = new ScoreTable("按学年查询", year, "undefined");
         return buildScoreTable(doc, scoreTable);
     }
 

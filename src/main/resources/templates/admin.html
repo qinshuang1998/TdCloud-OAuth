@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" class="no-js">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="应用授权，项目注册，信息管理，开发者中心">
+    <meta name="keywords" content="通达云认证中心">
+    <title>项目申请管理</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="icon" href="favicon.ico" type="image/x-icon"/>
+    <link rel="stylesheet" th:href="@{/css/amazeui.min.css}">
+</head>
+<body>
+<div class="am-g"
+     th:switch="(${#httpServletRequest.getParameter('key')} != null) and (${#httpServletRequest.getParameter('key')} eq ${key})">
+    <div class="am-margin-top-xl" th:case="false">
+        <form class="am-form-inline am-text-center" role="form" method="get" action="admin">
+            <div class="am-form-group">
+                <input name="key" type="password" class="am-form-field" placeholder="密码">
+            </div>
+            <button type="submit" class="am-btn am-btn-default">芝麻开门~</button>
+        </form>
+    </div>
+    <div class="col-sm-12" th:case="true">
+        <table class="am-table">
+            <thead>
+            <tr>
+                <th>网站名称</th>
+                <th>网址</th>
+                <th>创建时间</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Amaze UI</td>
+                <td>http://amazeui.org</td>
+                <td>2012-10-01</td>
+            </tr>
+            <tr>
+                <td>Amaze UI</td>
+                <td>http://amazeui.org</td>
+                <td>2012-10-01</td>
+            </tr>
+            <tr class="am-active">
+                <td>Amaze UI(Active)</td>
+                <td>http://amazeui.org</td>
+                <td>2012-10-01</td>
+            </tr>
+            <tr>
+                <td>Amaze UI</td>
+                <td>http://amazeui.org</td>
+                <td>2012-10-01</td>
+            </tr>
+            <tr>
+                <td>Amaze UI</td>
+                <td>http://amazeui.org</td>
+                <td>2012-10-01</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="https://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+<!--<![endif]-->
+<!--[if lte IE 8 ]>
+<script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
+<script th:src="@{/js/amazeui.ie8polyfill.min.js}"></script>
+<![endif]-->
+<script th:src="@{/js/amazeui.min.js}"></script>
+<script>
+
+</script>
+</body>
+</html>
