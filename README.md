@@ -7,9 +7,9 @@
 
 [开发者文档请移步 ✈](https://github.com/qinshuang1998/TdCloud-OAuth/wiki)
 
-### 1.快速部署
+### 1.快速部署方案
 
-**1）Docker**
+**1）Docker(推荐方案)**
 
 以Centos为例，首先安装Docker社区版环境，如已安装则可跳到步骤4继续
 
