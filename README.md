@@ -26,7 +26,7 @@ $ sudo yum remove docker \
                   docker-logrotate \
                   docker-engine
 ```
-2. 设置仓库
+2. 设置仓库，提升后续下载速度
 
 ```shell
 # 安装所需的软件包。yum-utils 提供了 yum-config-manager ，并且 device mapper 存储驱动程序需要 device-mapper-persistent-data 和 lvm2。
@@ -41,14 +41,14 @@ $ sudo yum-config-manager \
     --add-repo \
     https://download.docker.com/linux/centos/docker-ce.repo
 ```
-3. 从yum安装
+3. 从yum安装docker
 
 ```shell
 $ sudo yum install docker-ce docker-ce-cli containerd.io
 ```
 ```shell
 # 此处针对可能出现的linux配置问题，需要进行自查，否则会影响后续构建
-1. 解决创建容器的时候报错WARNING: IPv4 forwarding is disabled. Networking will not work.
+1.解决创建容器的时候报错WARNING: IPv4 forwarding is disabled. Networking will not work.
 $ vim /usr/lib/sysctl.d/00-system.conf
 然后添加如下配置：
 net.ipv4.ip_forward=1
@@ -66,7 +66,7 @@ $ sudo docker run hello-world
 5. 下载本git项目，进入项目下docker目录
 
 ```shell
-$ git clone git@github.com:qinshuang1998/TdCloud-OAuth.git
+$ git clone https://github.com/qinshuang1998/TdCloud-OAuth.git
 $ cd TdCloud-OAuth/docker/
 ```
 6. 赋予权限，运行脚本，一键构建
