@@ -55,19 +55,26 @@ net.ipv4.ip_forward=1
 最后重启network服务：
 $ systemctl restart network
 ```
+4. 启动Docker
 
-4. 下载本git项目，进入项目下docker目录
+```shell
+$ sudo systemctl start docker
+# 通过运行 hello-world 映像来验证是否正确安装了 Docker Engine-Community。
+$ sudo docker run hello-world
+```
+
+5. 下载本git项目，进入项目下docker目录
 
 ```shell
 $ git clone git@github.com:qinshuang1998/TdCloud-OAuth.git
 $ cd TdCloud-OAuth/docker/
 ```
-5. 赋予权限，运行脚本，一键构建
+6. 赋予权限，运行脚本，一键构建
 
 ```shell
 $ chmod 777 build.sh && ./build.sh
 ```
-6. 测试访问 - http://{IP}:8080
+7. 如build脚本执行未报错，最后测试访问 - http://{IP}:8080
 
 **2）一般部署**
 
