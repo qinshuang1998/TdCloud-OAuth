@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Adapter调度器
+ */
 public class DispatcherAdapter {
     private static List<TokenHandlerAdapter> handler = new ArrayList<>();
 
