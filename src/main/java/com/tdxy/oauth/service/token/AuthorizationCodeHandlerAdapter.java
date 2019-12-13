@@ -1,6 +1,5 @@
 package com.tdxy.oauth.service.token;
 
-import com.tdxy.oauth.exception.IllegalClientException;
 import com.tdxy.oauth.exception.InvalidCodeException;
 import com.tdxy.oauth.model.bo.GetTokenParam;
 import com.tdxy.oauth.model.po.Client;
